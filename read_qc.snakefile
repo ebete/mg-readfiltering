@@ -28,7 +28,7 @@ rule qc_reads:
         "envs/fastqc.yaml"
     log:
         "logs/fastqc/{sample}_{direction}_{paired}.log"
-    threads: 1
+    threads: 6 # Limits the amount of parallel jobs possible to prevent excessive disk IO
     shell:
         "mkdir -p {output} && "
         "fastqc --noextract -q -f fastq -t {threads} -o {output} {input} 2> {log}"
@@ -36,7 +36,7 @@ rule qc_reads:
 
 rule aggegrate_results:
     input:
-        expand("{{project}}/fastqc/paired/{sample}_{direction}", sample=config["data"], direction=["forward", "reverse"])
+        expand("{{project}}/fastqc/{paired}/{sample}_{direction}", paired=["paired", "unpaired"], sample=config["data"], direction=["forward", "reverse"])
     output:
         html="{project}/multiqc/qc_report.html",
         zip="{project}/multiqc/qc_report_data.zip"
