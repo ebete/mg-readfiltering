@@ -1,34 +1,36 @@
-rule extract_fq:
+rule extract_fq_fwd:
     input:
-        forward = lambda wildcards: config["data"][wildcards.sample]["forward"],
-        reverse = lambda wildcards: config["data"][wildcards.sample]["reverse"]
+        forward = lambda wildcards: config["data"][wildcards.rawread]["forward"]
     output:
-        forward = temp("{project}/scratch/raw_fq/{sample}_1.fastq"),
-        reverse = temp("{project}/scratch/raw_fq/{sample}_2.fastq")
+        forward = temp("{project}/scratch/raw_fq/{rawread}_1.fastq")
     threads: 1
     shell:
-        "bzip2 -kdqc {input.forward} > {output.forward} && "
+        "bzip2 -kdqc {input.forward} > {output.forward}"
+
+
+rule extract_fq_rev:
+    input:
+        reverse = lambda wildcards: config["data"][wildcards.rawread]["reverse"]
+    output:
+        reverse = temp("{project}/scratch/raw_fq/{rawread}_2.fastq")
+    threads: 1
+    shell:
         "bzip2 -kdqc {input.reverse} > {output.reverse}"
 
 
 rule qc_reads:
     input:
-        forward = "{project}/scratch/raw_fq/{sample}_1.fastq",
-        reverse = "{project}/scratch/raw_fq/{sample}_1.fastq"
+        "{project}/scratch/raw_fq/{rawread_stranded}.fastq"
     output:
-        forward = protected("{project}/fastqc/{sample}_1"),
-        reverse = protected("{project}/fastqc/{sample}_2")
+        protected("{project}/fastqc/{rawread_stranded}")
     conda:
         "envs/fastqc.yaml"
     log:
-        forward = "logs/fastqc/{sample}_1.log",
-        reverse = "logs/fastqc/{sample}_2.log"
+        "logs/fastqc/{rawread_stranded}.log"
     threads: 1
     shell:
-        "mkdir -p {output.forward} && "
-        "fastqc --noextract -q -f fastq -t {threads} -o {output.forward} {input.forward} 2> {log.forward} && "
-        "mkdir -p {output.reverse} && "
-        "fastqc --noextract -q -f fastq -t {threads} -o {output.reverse} {input.reverse} 2> {log.reverse}"
+        "mkdir -p {output} && "
+        "fastqc --noextract -q -f fastq -t {threads} -o {output} {input} 2> {log}"
 
 
 rule aggegrate_results:
@@ -46,4 +48,4 @@ rule aggegrate_results:
         data="{project}/multiqc/",
         html="qc_report.html"
     shell:
-        "multiqc -n {params.html} -o {params.data} -z {input} 2> {log}"
+        "multiqc --interactive -n {params.html} -o {params.data} -z {input} 2> {log}"
