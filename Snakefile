@@ -14,6 +14,7 @@ if config["run-fastqc"]:
 OUTFILES.append("{project}/kaiju/paired/{sample}.tsv")  # Kaiju
 if config["run-krona"]:
     OUTFILES.append("{project}/krona/{sample}.html")    # Krona
+OUTFILES.append("{project}/khmer/{sample}.fasta")
 
 
 rule all:
@@ -23,3 +24,4 @@ rule all:
 
 include: "read_qc.snakefile"
 include: "read_taxonomy_classify.snakefile"
+include: "read_diginorm.snakefile"
