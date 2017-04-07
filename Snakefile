@@ -8,12 +8,18 @@ from snakemake.utils import min_version
 min_version("3.11.0")
 
 configfile: "config.yaml"
+OUTFILES = []
+if config["run-fastqc"]:
+    OUTFILES.append("{project}/multiqc/qc_report.html") # FastQC and MultiQC
+OUTFILES.append("{project}/kaiju/paired/{sample}.tsv")  # Kaiju
+if config["run-krona"]:
+    OUTFILES.append("{project}/krona/{sample}.html")    # Krona
 
-PROJECT = config["project"]
 
 rule all:
     input:
-        expand("{project}/multiqc/qc_report.html", project=config["project"])
-#        "{project}/multiqc/qc_report.html"
+        expand(OUTFILES, project=config["project"], sample=config["data"])
+
 
 include: "read_qc.snakefile"
+include: "read_taxonomy_classify.snakefile"

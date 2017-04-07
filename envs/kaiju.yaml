@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - kaiju=1.4.5
+  - krona=2.7
+  - perl=5.22

@@ -39,6 +39,14 @@ def make_config(config, dataloc):
     conf = OrderedDict()
     conf["project"] = "mg-preprocess"
     conf["run-fastqc"] = True
+    conf["run-krona"] = True
+    conf["kaiju"] = {
+        "db": "/mnt/data/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr",
+        "match-mode": "greedy",
+        "max-sub": 2,
+        "min-matchlen": 11,
+        "min-matchscore": 65
+    }
 
     samples = get_sample_files(dataloc)
     logging.info("Found %d samples under %s" % (len(samples), dataloc))
