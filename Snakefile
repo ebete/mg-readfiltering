@@ -10,10 +10,12 @@ min_version("3.11.0")
 configfile: "config.yaml"
 OUTFILES = []
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html") # FastQC and MultiQC
-OUTFILES.append("{project}/kaiju/paired/{sample}.tsv")  # Kaiju
+    OUTFILES.append("{project}/multiqc/qc_report.html")        # FastQC and MultiQC
+OUTFILES.append("{project}/kaiju/paired/{sample}.tsv")         # Kaiju paired
+OUTFILES.append("{project}/kaiju/unpaired/{sample}.tsv")       # Kaiju unpaired
 if config["run-krona"]:
-    OUTFILES.append("{project}/krona/{sample}.html")    # Krona
+    OUTFILES.append("{project}/krona/{sample}_paired.html")    # Krona paired
+    OUTFILES.append("{project}/krona/{sample}_unpaired.html")  # Krona unpaired
 
 
 rule all:

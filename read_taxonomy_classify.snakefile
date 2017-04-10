@@ -19,19 +19,50 @@ rule kaiju_paired:
         "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(gunzip -c {input.forward}) -j <(gunzip -c {input.reverse}) -v -o {output} 2> {log}"
 
 
-rule kaiju_krona:
+rule merge_unpaired:
     input:
-        "{project}/kaiju/paired/{sample}.tsv"
+        forward = lambda wildcards: config["data"][wildcards.sample]["forward"]["unpaired"],
+        reverse = lambda wildcards: config["data"][wildcards.sample]["reverse"]["unpaired"]
     output:
-        html = protected("{project}/krona/{sample}.html"),
-        krona = "{project}/krona/{sample}.krona"
+        "{project}/unpaired-merged/{sample}_unpaired.fq.gz" # TODO: make temp later
+    threads: 1
+    shell:
+        "cat {input.forward} {input.reverse} > {output}"
+
+
+rule kaiju_unpaired:
+    input:
+        "{project}/unpaired-merged/{sample}_unpaired.fq.gz"
+    output:
+        protected("{project}/kaiju/unpaired/{sample}.tsv")
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/krona/{sample}.log"
+        "logs/kaiju/{sample}_unpaired.log"
+    threads: 6
+    params:
+        kaiju_files = "-t {0}/nodes.dmp -f {0}/kaiju_db_nr_euk.fmi".format(config["kaiju"]["db"]),
+        mode = config["kaiju"]["match-mode"],
+        max_substitutions = config["kaiju"]["max-sub"],
+        min_matchlen = config["kaiju"]["min-matchlen"],
+        min_matchscore = config["kaiju"]["min-matchscore"]
+    shell:
+        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(gunzip -c {input}) -v -o {output} 2> {log}"
+
+
+rule kaiju_krona:
+    input:
+        "{project}/kaiju/{paired}/{sample}.tsv"
+    output:
+        html = protected("{project}/krona/{sample}_{paired}.html"),
+        krona = "{project}/krona/{sample}_{paired}.krona"
+    conda:
+        "envs/kaiju.yaml"
+    log:
+        "logs/krona/{sample}_{paired}.log"
     threads: 1
     params:
         kaiju_files = "-t {0}/nodes.dmp -n {0}/names.dmp".format(config["kaiju"]["db"])
     shell:
-        "kaiju2krona {params.kaiju_files} -i {input} -o {output.krona} && "
-        "ktImportText -o {output.html} {output.krona}"
+        "(kaiju2krona {params.kaiju_files} -i {input} -o {output.krona} && "
+        "ktImportText -o {output.html} {output.krona}) 2> {log}"
