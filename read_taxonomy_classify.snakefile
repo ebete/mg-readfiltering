@@ -50,6 +50,40 @@ rule kaiju_unpaired:
         "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(gunzip -c {input}) -v -o {output} 2> {log}"
 
 
+rule kaiju_paired_binning:
+    input:
+        kaiju = "{project}/kaiju/paired/{sample}.tsv",
+        fastq = lambda wildcards: config["data"][wildcards.sample][wildcards.direction]["paired"]
+    output:
+        "{project}/bins/{sample}_{direction}"
+    conda:
+        "envs/kaiju.yaml"
+    log:
+        "logs/binning/{sample}_{direction}_binning.log"
+    threads: 1
+    params:
+        otu_file = config["kaiju"]["otu-file"]
+    shell:
+        "get_kaiju_otu.py -t {params.otu_file} -k {input.kaiju} -i {input.fastq} -o {output} -f -vv 2> {log}"
+
+
+rule kaiju_unpaired_binning:
+    input:
+        kaiju = "{project}/kaiju/unpaired/{sample}.tsv",
+        fastq = "{project}/unpaired-merged/{sample}_unpaired.fq.gz"
+    output:
+        "{project}/bins/{sample}_unpaired"
+    conda:
+        "envs/kaiju.yaml"
+    log:
+        "logs/binning/{sample}_unpaired_binning.log"
+    threads: 1
+    params:
+        otu_file = config["kaiju"]["otu-file"]
+    shell:
+        "get_kaiju_otu.py -t {params.otu_file} -k {input.kaiju} -i {input.fastq} -o {output} -f -vv 2> {log}"
+
+
 rule kaiju_krona:
     input:
         "{project}/kaiju/{paired}/{sample}.tsv"

@@ -16,11 +16,13 @@ OUTFILES.append("{project}/kaiju/unpaired/{sample}.tsv")       # Kaiju unpaired
 if config["run-krona"]:
     OUTFILES.append("{project}/krona/{sample}_paired.html")    # Krona paired
     OUTFILES.append("{project}/krona/{sample}_unpaired.html")  # Krona unpaired
+OUTFILES.append("{project}/bins/{sample}_{direction}")         # Binning paired
+OUTFILES.append("{project}/bins/{sample}_unpaired")            # Binning unpaired
 
 
 rule all:
     input:
-        expand(OUTFILES, project=config["project"], sample=config["data"])
+        expand(OUTFILES, project=config["project"], sample=config["data"], direction=["forward", "reverse"])
 
 
 include: "read_qc.snakefile"

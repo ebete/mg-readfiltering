@@ -1,7 +1,12 @@
 channels:
   - conda-forge
   - bioconda
+  - etetoolkit
 dependencies:
-  - kaiju=1.4.5
-  - krona=2.7
-  - perl=5.22
+  - kaiju>=1.4.5
+  - krona>=2.7
+  - perl>=5.22
+  - python>=3.6
+  - scipy>=0.19
+  - biopython>=1.68
+  - ete3
