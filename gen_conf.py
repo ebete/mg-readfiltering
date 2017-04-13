@@ -38,7 +38,8 @@ def make_config(config, dataloc):
         "match-mode": "greedy",
         "max-sub": 2,
         "min-matchlen": 11,
-        "min-matchscore": 65
+        "min-matchscore": 65,
+        "otu-file": "otus.txt"
     }
     conf["khmer"] = {
         "k-size": 20,
