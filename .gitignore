@@ -60,6 +60,8 @@ docs/_build/
 target/
 
 # Snakemake
-.snakemake
+.snakemake/
 config.yaml
 
+# Temporary files
+*.swp
