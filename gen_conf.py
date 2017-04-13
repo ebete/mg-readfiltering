@@ -31,10 +31,10 @@ def make_config(config, dataloc):
 
     conf = OrderedDict()
     conf["project"] = "mg-preprocess"
-    conf["run-fastqc"] = True
-    conf["run-krona"] = True
+    conf["run-fastqc"] = False
+    conf["run-krona"] = False
     conf["kaiju"] = {
-        "db": "/mnt/data/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr",
+        "db": "/mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr",
         "match-mode": "greedy",
         "max-sub": 2,
         "min-matchlen": 11,

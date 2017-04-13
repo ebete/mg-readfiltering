@@ -11,10 +11,10 @@ configfile: "config.yaml"
 OUTFILES = []
 if config["run-fastqc"]:
     OUTFILES.append("{project}/multiqc/qc_report.html") # FastQC and MultiQC
-OUTFILES.append("{project}/kaiju/paired/{sample}.tsv")  # Kaiju
 if config["run-krona"]:
+    OUTFILES.append("{project}/kaiju/paired/{sample}.tsv")  # Kaiju
     OUTFILES.append("{project}/krona/{sample}.html")    # Krona
-OUTFILES.append("{project}/khmer/{sample}.fasta")
+OUTFILES.append("{project}/khmer/{sample}.fq.gz")       # Khmer
 
 
 rule all:
@@ -24,4 +24,5 @@ rule all:
 
 include: "read_qc.snakefile"
 include: "read_taxonomy_classify.snakefile"
+include: "read_reformat.snakefile"
 include: "read_diginorm.snakefile"

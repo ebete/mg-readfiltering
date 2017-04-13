@@ -1,26 +1,5 @@
-#rule extract_fq_fwd:
-#    input:
-#        forward = lambda wildcards: config["data"][wildcards.rawread]["forward"]
-#    output:
-#        forward = temp("{project}/scratch/raw_fq/{rawread}_1.fastq")
-#    threads: 1
-#    shell:
-#        "bzip2 -kdqc {input.forward} > {output.forward}"
-#
-#
-#rule extract_fq_rev:
-#    input:
-#        reverse = lambda wildcards: config["data"][wildcards.rawread]["reverse"]
-#    output:
-#        reverse = temp("{project}/scratch/raw_fq/{rawread}_2.fastq")
-#    threads: 1
-#    shell:
-#        "bzip2 -kdqc {input.reverse} > {output.reverse}"
-
-
 rule qc_reads:
     input:
-#        "{project}/scratch/raw_fq/{rawread_stranded}.fastq"
         lambda wildcards: config["data"][wildcards.sample][wildcards.direction][wildcards.paired]
     output:
         protected("{project}/fastqc/{paired}/{sample}_{direction}")
