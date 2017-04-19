@@ -1,4 +1,4 @@
-# Reformats headers of FASTQ files and interleaves the pairs
+# Merges forward and reverse FASTQ files
 rule merge_unpaired:
     input:
         forward = lambda wildcards: config["data"][wildcards.sample]["forward"]["unpaired"],
@@ -12,8 +12,6 @@ rule merge_unpaired:
     threads: 8 # Limit disk IO
     shell:
         "cat {input} > {output}"
-#       "(reformat.sh t={threads} in={input.forward} out=stdout.fq.gz trd > {output} && "
-#       "reformat.sh t={threads} in={input.reverse} out=stdout.fq.gz trd >> {output}) 2> {log}"
 
 
 rule reformat_paired:

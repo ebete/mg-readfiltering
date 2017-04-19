@@ -30,6 +30,6 @@ rule aggegrate_results:
         fastqc_results="{project}/fastqc/",
         outdir="{project}/multiqc/",
         html="qc_report.html",
-        trimmomatic_results="../data/"
+        trimmomatic_results="{project}/trimmomatic/"
     shell:
         "multiqc --interactive -n {params.html} -o {params.outdir} -z {params.fastqc_results} {params.trimmomatic_results} 2> {log}"

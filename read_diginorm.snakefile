@@ -1,7 +1,5 @@
 rule khmer_diginorm:
     input:
-#        forward = "{project}/reformatted/{sample}_forward.fq.gz",
-#        reverse = "{project}/reformatted/{sample}_reverse.fq.gz",
         paired = "{project}/reformatted/{sample}_paired.fq.gz",
         unpaired = "{project}/reformatted/{sample}_unpaired.fq.gz"
     output:
