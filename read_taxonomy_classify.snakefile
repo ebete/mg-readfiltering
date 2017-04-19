@@ -8,7 +8,7 @@ rule kaiju_paired:
         "envs/kaiju.yaml"
     log:
         "logs/kaiju/{sample}_paired.log"
-    threads: 6
+    threads: 8
     params:
         kaiju_files = "-t {0}/nodes.dmp -f {0}/kaiju_db_nr_euk.fmi".format(config["kaiju"]["db"]),
         mode = config["kaiju"]["match-mode"],
@@ -28,7 +28,7 @@ rule kaiju_unpaired:
         "envs/kaiju.yaml"
     log:
         "logs/kaiju/{sample}_unpaired.log"
-    threads: 6
+    threads: 8
     params:
         kaiju_files = "-t {0}/nodes.dmp -f {0}/kaiju_db_nr_euk.fmi".format(config["kaiju"]["db"]),
         mode = config["kaiju"]["match-mode"],
@@ -36,7 +36,7 @@ rule kaiju_unpaired:
         min_matchlen = config["kaiju"]["min-matchlen"],
         min_matchscore = config["kaiju"]["min-matchscore"]
     shell:
-        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(gunzip -c {input}) -v -o {output} 2> {log}"
+        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(pigz -t 1 -cd {input}) -v -o {output} 2> {log}"
 
 
 rule kaiju_binning:
@@ -53,7 +53,7 @@ rule kaiju_binning:
     params:
         otu_file = config["kaiju"]["otu-file"]
     shell:
-        "get_kaiju_otu.py -t {params.otu_file} -k {input.kaiju} -i {input.fastq} -o {output} -f -vv 2> {log}"
+        "get_kaiju_otu.py -t {params.otu_file} -k {input.kaiju} -i {input.fastq} -o {output} -f -vv --log {log}"
 
 
 rule kaiju_krona:

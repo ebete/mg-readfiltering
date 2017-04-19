@@ -8,7 +8,8 @@ rule qc_reads:
         "envs/fastqc.yaml"
     log:
         "logs/fastqc/{sample}_{direction}_{paired}.log"
-    threads: 6 # Limits the amount of parallel jobs possible to prevent excessive disk IO
+    threads: 8
+    resources: high_diskio=1 # Limit disk IO
     params:
         outdir="{project}/fastqc/"
     shell:

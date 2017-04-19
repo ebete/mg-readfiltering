@@ -1,3 +1,5 @@
+# Usage: snakemake --use-conda -p --cores 16 --resources high_diskio=4
+
 __author__ = "Thom Griffioen"
 __copyright__ = "Copyright 2017 Thom Griffioen"
 __email__ = "t.griffioen@nioo.knaw.nl"
