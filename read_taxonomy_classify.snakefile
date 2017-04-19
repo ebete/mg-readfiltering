@@ -3,7 +3,7 @@ rule kaiju_paired:
         forward = lambda wildcards: config["data"][wildcards.sample]["forward"]["paired"],
         reverse = lambda wildcards: config["data"][wildcards.sample]["reverse"]["paired"]
     output:
-        protected("{project}/kaiju/paired/{sample}.tsv")
+        "{project}/kaiju/{sample}_paired.tsv"
     conda:
         "envs/kaiju.yaml"
     log:
@@ -19,22 +19,11 @@ rule kaiju_paired:
         "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(pigz -t 1 -cd {input.forward}) -j <(pigz -t 1 -cd {input.reverse}) -v -o {output} 2> {log}"
 
 
-rule merge_unpaired:
-    input:
-        forward = lambda wildcards: config["data"][wildcards.sample]["forward"]["unpaired"],
-        reverse = lambda wildcards: config["data"][wildcards.sample]["reverse"]["unpaired"]
-    output:
-        "{project}/unpaired-merged/{sample}_unpaired.fq.gz" # TODO: make temp later
-    threads: 1
-    shell:
-        "cat {input.forward} {input.reverse} > {output}"
-
-
 rule kaiju_unpaired:
     input:
-        "{project}/unpaired-merged/{sample}_unpaired.fq.gz"
+        "{project}/reformatted/{sample}_unpaired.fq.gz"
     output:
-        protected("{project}/kaiju/unpaired/{sample}.tsv")
+        "{project}/kaiju/{sample}_unpaired.tsv"
     conda:
         "envs/kaiju.yaml"
     log:
@@ -50,33 +39,16 @@ rule kaiju_unpaired:
         "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(gunzip -c {input}) -v -o {output} 2> {log}"
 
 
-rule kaiju_paired_binning:
+rule kaiju_binning:
     input:
-        kaiju = "{project}/kaiju/paired/{sample}.tsv",
-        fastq = lambda wildcards: config["data"][wildcards.sample][wildcards.direction]["paired"]
+        kaiju = "{project}/kaiju/{sample}_{paired}.tsv",
+        fastq = "{project}/reformatted/{sample}_{paired}.fq.gz"
     output:
-        "{project}/bins/{sample}_{direction}"
+        "{project}/bins/{sample}_{paired}"
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/binning/{sample}_{direction}_binning.log"
-    threads: 1
-    params:
-        otu_file = config["kaiju"]["otu-file"]
-    shell:
-        "get_kaiju_otu.py -t {params.otu_file} -k {input.kaiju} -i {input.fastq} -o {output} -f -vv 2> {log}"
-
-
-rule kaiju_unpaired_binning:
-    input:
-        kaiju = "{project}/kaiju/unpaired/{sample}.tsv",
-        fastq = "{project}/unpaired-merged/{sample}_unpaired.fq.gz"
-    output:
-        "{project}/bins/{sample}_unpaired"
-    conda:
-        "envs/kaiju.yaml"
-    log:
-        "logs/binning/{sample}_unpaired_binning.log"
+        "logs/binning/{sample}_{paired}_binning.log"
     threads: 1
     params:
         otu_file = config["kaiju"]["otu-file"]
@@ -86,9 +58,9 @@ rule kaiju_unpaired_binning:
 
 rule kaiju_krona:
     input:
-        "{project}/kaiju/{paired}/{sample}.tsv"
+        "{project}/kaiju/{sample}_{paired}.tsv"
     output:
-        html = protected("{project}/krona/{sample}_{paired}.html"),
+        html = "{project}/krona/{sample}_{paired}.html",
         krona = "{project}/krona/{sample}_{paired}.krona"
     conda:
         "envs/kaiju.yaml"
