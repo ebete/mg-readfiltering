@@ -11,6 +11,7 @@ min_version("3.11.0")
 
 configfile: "config.yaml"
 OUTFILES = []
+OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
     OUTFILES.append("{project}/multiqc/qc_report.html")        # MultiQC
 if config["run-krona"]:
