@@ -13,11 +13,13 @@ configfile: "config.yaml"
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html")        # MultiQC
+    OUTFILES.append("{project}/multiqc/qc_report.html")           # FastQC+MultiQC
 if config["run-krona"]:
-    OUTFILES.append("{project}/krona/{sample}_{paired}.html")  # Krona
-#OUTFILES.append("{project}/bins/{sample}_{paired}")            # Binning
-#OUTFILES.append("{project}/khmer/{sample}.fq.gz")              # Khmer
+    OUTFILES.append("{project}/krona/{sample}_{paired}.html")     # Kaiju+Krona
+if config["run-khist"]:
+    OUTFILES.append("{project}/khmer/{sample}_{paired}.hist.pdf") # BBMap khist+R
+#OUTFILES.append("{project}/bins/{sample}_{paired}")             # Binning
+#OUTFILES.append("{project}/khmer/{sample}.fq.gz")               # Khmer
 
 
 rule all:

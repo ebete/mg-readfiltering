@@ -33,6 +33,7 @@ def make_config(config, dataloc):
     conf["project"] = "mg-preprocess"
     conf["run-fastqc"] = False
     conf["run-krona"] = False
+    conf["run-khist"] = False
     conf["kaiju"] = {
         "db": "/mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr",
         "match-mode": "greedy",
