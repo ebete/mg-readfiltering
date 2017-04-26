@@ -1,0 +1,49 @@
+# mg-readfiltering CI Docker setup
+image: docker:latest
+
+services:
+  - docker:dind
+
+stages:
+  - build
+  - test
+
+cache:
+  paths:
+    - .snakemake/
+    - data/
+
+variables:
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  SCP_DATA: "thomg@nioo0025.nioo.int:~/ci-data/*"
+
+before_script:
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - apt-get update -qy && apt-get install -qy snakemake r-base openssh-client
+    - Rscript -e 'install.packages(c("ggplot2"), repos="http://cran-mirror.cs.uu.nl/")'
+    - wget -t 1 --no-verbose -O miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+
+build_job:
+  stage: build
+  script:
+    - docker build --pull -t "$CONTAINER_TEST_IMAGE" .
+    - docker push "$CONTAINER_TEST_IMAGE"
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - echo "$SSH_SERVER_HOSTKEY" > ~/.ssh/known_hosts'
+    - mkdir -p data/
+    - scp $SCP_DATA data/
+
+test_job:
+  stage: test
+  script:
+    - docker build --pull -t "$CONTAINER_TEST_IMAGE" .
+    - docker push "$CONTAINER_TEST_IMAGE"
+    - python3 gen_conf.py data/
+    - snakemake --use-conda -p --cores 1 --resources high_diskio=1
