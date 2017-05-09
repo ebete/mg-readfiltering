@@ -9,7 +9,7 @@ before_script:
     - conda config --add channels defaults
     - conda config --add channels r
     - conda config --add channels bioconda
-    - conda install snakemake r-base
+    - conda install -q snakemake r-base gcc 
     - Rscript -e 'install.packages(c("ggplot2", "scales"), repos="http://cran-mirror.cs.uu.nl/")'
 
 test_job:
