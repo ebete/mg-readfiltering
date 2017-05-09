@@ -8,8 +8,8 @@ before_script:
     - conda config --add channels conda-forge
     - conda config --add channels r
     - conda config --add channels bioconda
-    - conda install -q snakemake r-base gcc 
-    - Rscript -e 'install.packages(c("ggplot2", "scales"), repos="http://cran-mirror.cs.uu.nl/")'
+    - conda config --add channels etetoolkit
+    - conda install -q snakemake r-base r-ggplot2 r-scales
 
 test_job:
   stage: test
