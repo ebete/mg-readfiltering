@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 
+# standard libraries
+import argparse
+import gzip
+import logging
+import os
+import re
+import sys
+from traceback import format_exc
+# biopython and etetoolkit
+from Bio import SeqIO
+from ete3 import NCBITaxa
+# local libraries
+import lineage_lookup
+
 """
 MIT License
 Copyright (c) 2017 Thom Griffioen
 
 Author: Thom Griffioen
-Date: 2017-04-12
+Date: 2017-05-09
 """
-epilog="""
-This program parses the results from Kaiju and attempts to bin the reads. It uses a file containing Taxonomy IDs
-and checks if the TaxID assigned to the read falls under it and bins it accordingly. Processing paired-end reads
-should not be a problem as long as the reads are ordered (i.e. the first and second read are a pair, the third and fourth the second pair, etc.)
+_epilog = """
+This program parses the results from Kaiju and attempts to bin the reads. It
+splits based on the taxonomic rank. Processing paired-end reads should not
+be a problem as long as the reads are ordered (i.e. the first and second read
+are a pair, the third and fourth the second pair, etc.). Please make sure that
+the amount of bins created will not exceed the file limit (shown by ulimit -Hn).
 """
-
-import argparse
-import gzip
-import logging
-import os
-import sys
-
-from Bio import SeqIO
-from ete3 import NCBITaxa
 
 
 def main(args):
@@ -28,44 +35,63 @@ def main(args):
         raise FileNotFoundError("FASTQ file %s does not exist." % args.input)
     if not os.path.exists(args.kaiju):
         raise FileNotFoundError("Kaiju result file %s does not exist." % args.kaiju)
+    if args.taxon_rank not in lineage_lookup.tax_ranks:
+        raise ArgumentError("The given rank '%s' is not supported." % args.taxon_rank)
     os.makedirs(args.output, exist_ok=True)
     if not os.access(args.output, os.W_OK):
         raise PermissionError("Writing to the output directory %s is not permitted." % args.output)
+    if len(os.listdir(args.output)) > 0:
+        logging.warning("The output directory %s is not empty. Files may be overwritten if --overwrite is passed. "
+                        "Otherwise, the program will fail without outputting results!" % args.output)
 
+    # Keep for database initialisation/updating.
     logging.info("Loading ete3 NCBI Taxonomy database ...")
     taxdb = NCBITaxa()
     if args.update:
         logging.info("Updating ete3 NCBI Taxonomy database ...")
         taxdb.update_taxonomy_database()
-    
-    otutaxid2name = get_otu_names(taxdb, args.otu)
-    binfiles = get_bin_output_files(otutaxid2name, args.output, args.prefix, args.overwrite)
-    fqid2otu = get_fqid_taxid(taxdb, otutaxid2name, args.kaiju)
-    bin_reads(fqid2otu, args.input, binfiles)
+
+    fqid2otu, binnames = get_fqid_taxid(args.taxon_rank, args.kaiju, args.threads)
+    binfiles = get_bin_output_files(binnames, args.output, args.prefix, args.overwrite)
+
+    fhandles = {}
+    try:
+        logging.info("Opening file handles for %d bins ..." % len(binfiles))
+        fhandles = {binname: gzip.open(filename, "wt", compresslevel=4) for binname, filename in binfiles.items()}
+        # bin_reads(fqid2otu, args.input, fhandles)
+    except:
+        raise
+    finally:
+        logging.info("Closing file handles ...")
+        for fhandle in fhandles.values():
+            fhandle.close()
 
 
-def get_bin_output_files(otutaxid2name, outdir, prefix, overwrite):
+def get_bin_output_files(binnames, outdir, prefix, overwrite):
     """
     Assigns an output file to each bin.
+
+    {binname: filedir}
     """
     logging.debug("Check if bin files conflict with existing files ...")
     binfiles = {}
-    for key, value in otutaxid2name.items():
-        binfiles[value] = os.path.join(outdir, prefix + value.lower() + ".fastq")
+    namepattern = re.compile("[\W]+")
+    for names in binnames:
+        fname = prefix + names.lower()
+        fname = namepattern.sub("", fname)
+        flocation = os.path.join(outdir, fname + ".fq.gz")
+        binfiles[names] = flocation
     for path in binfiles.values():
         if os.path.exists(path):
-            logging.warning("Output file %s exists" % path)
+            logging.debug("Output file %s exists" % path)
             if not overwrite:
                 raise FileExistsError("The file %s already exists. Use --overwrite to ignore this." % path)
-            logging.info("Truncating file %s ..." % path)
-            with open(path, 'w'):
-                pass
         else:
             logging.debug("Output file %s not created yet" % path)
     return binfiles
 
 
-def bin_reads(fqid2bin, fqfile, outfile):
+def bin_reads(fqid2bin, fqfile, filehandles):
     """
     Bins the reads in separate files based on the OTU linked to the read ID.
     """
@@ -74,90 +100,74 @@ def bin_reads(fqid2bin, fqfile, outfile):
         previd = ""
         prevotu = "root"
         for record in SeqIO.parse(fin, "fastq"):
-            if record.id == previd: # Bins PE reads together
-                write_bin(outfile[prevotu], record)
+            if record.id == previd:  # Bins PE reads together
+                # logging.debug("Writing record %s to %s" % (record.id, prevotu))
+                SeqIO.write(record, filehandles[prevotu], "fastq")
             else:
                 otu = fqid2bin.get(record.id, "root")
-                write_bin(outfile[otu], record)
+                # logging.debug("Writing record %s to %s" % (record.id, otu))
+                SeqIO.write(record, filehandles[otu], "fastq")
                 previd = record.id
                 prevotu = otu
 
 
-def write_bin(binfile, read):
+def get_fqid_taxid(taxrank, kaijufile, workerthreads):
     """
-    Appends a FASTQ read to the given file.
-    """
-    with open(binfile, "a+") as fout:
-        SeqIO.write(read, fout, "fastq")
-
-
-def get_fqid_taxid(taxdb, tax2name, kaijufile):
-    """
-    Maps the IDs of the reads to an OTU.
+    Maps the IDs of the reads to an OTU in a dict. Also returns all the names
+    of the bins in a list.
     """
     logging.info("Assigning reads to OTUs ...")
     fqids = {}
 
+    logging.info("Loading %s into memory ..." % kaijufile)
     with open(kaijufile, "r") as fin:
         for line in fin:
+            if line[0] != 'C':
+                continue
             line = line.split()
-            binned = line[0][0] == 'C'
             taxid = line[2].strip()
-            otu = "root"
-            if binned:
-                otu = get_otu_bin(taxdb, tax2name, taxid)
             fqid = line[1].strip()
-            fqids[fqid] = otu
-    return fqids
+            fqids[fqid] = taxid
 
+    # multithreaded taxonomy lookups
+    logging.info("Resolving lineages of taxa (slow) ...")
+    logging.debug("Amount of worker threads set to %d" % workerthreads)
+    lineage_pool = lineage_lookup.ThreadPool(workerthreads)
+    for fqid in fqids:
+        lineage_pool.add_task(lineage_lookup.get_bin, taxrank, fqid, fqids)
+    logging.debug("Waiting for workers to finish ...")
+    lineage_pool.wait_completion()
 
-def get_otu_names(taxdb, otufile):
-    """
-    Returns a dictionary containing the name of the clade for each TaxID in the file containing the OTUs.
-    """
-    logging.info("Creating the OTU table ...")
-    taxids = [1]
-    with open(otufile, "r") as fin:
-        for line in fin:
-            taxids.append(int(line.strip()))
-    return taxdb.get_taxid_translator(list(filter(bool, taxids)))
+    logging.info("Parsing indentified bins ...")
+    binnames = set(x for x in fqids.values())
 
-
-def get_otu_bin(taxdb, otutaxid2name, taxid):
-    """
-    Returns the name of the taxonomic clade of the given OTUs where the given TaxID falls under.
-    """
-    lineage = [1]
-    try:
-        lineage = taxdb.get_lineage(taxid)[::-1]
-    except ValueError:
-#       logging.warning("Taxonomy ID %s not found" % taxid) # Generates a LOT of noise in the logs
-        pass
-    otu = taxdb.get_taxid_translator([1])[1]
-    for node in lineage:
-        if node in otutaxid2name:
-            otu = otutaxid2name[node]
-            break
-    return otu
+    return fqids, binnames
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog=sys.argv[0], description="Generates OTUs from Kaiju output.", epilog=epilog)
+    parser = argparse.ArgumentParser(prog=sys.argv[0], description="Generates OTUs from Kaiju output.", epilog=_epilog)
     optional = parser._action_groups.pop()
     required = parser.add_argument_group("required arguments")
     # Required arguments
-    required.add_argument("-t", "--otu", help="File with OTU TaxIDs (newline separated) to base binning on", action="store", type=str, required=True)
+    required.add_argument("-t", "--taxon-rank",
+                          help="The taxonomic rank used for separation (any of %s)" % ", ".join(lineage_lookup.tax_ranks),
+                          action="store", type=str, required=True)
     required.add_argument("-k", "--kaiju", help="The Kaiju result file", action="store", type=str, required=True)
-    required.add_argument("-i", "--input", help="The gunzipped FASTQ file used for the Kaiju analysis", action="store", type=str, required=True)
-    required.add_argument("-o", "--output", help="Output location for the OTUs", action="store", type=str, required=True)
+    required.add_argument("-i", "--input", help="The gzipped FASTQ file used for the Kaiju analysis", action="store",
+                          type=str, required=True)
+    required.add_argument("-o", "--output", help="Output location for the OTUs (gzipped FASTQ files)", action="store",
+                          type=str, required=True)
     # Optional arguments
-    optional.add_argument("-p", "--prefix", help="File prefix to use when creating FASTQ files", type=str, default="")
+    optional.add_argument("-p", "--prefix", help="File prefix to use when creating output files", type=str, default="")
     optional.add_argument("-f", "--overwrite", help="Overwrite existing files", action="store_true")
     optional.add_argument("-u", "--update", help="Checks the NCBI Taxonomy database for updates", action="store_true")
+    optional.add_argument("--threads", help="Specify the number of threads to use", type=int, action="store", default=1)
     # Standard arguments
     optional.add_argument("-v", "--verbose", help="Increase verbosity level", action="count")
-    optional.add_argument("-q", "--silent", help="Suppresses output messages, overriding the --verbose argument", action="store_true")
-    optional.add_argument("-l", "--log", help="Set the logging output location", action="store", type=argparse.FileType('w'), default=sys.stderr)
+    optional.add_argument("-q", "--silent", help="Suppresses output messages, overriding the --verbose argument",
+                          action="store_true")
+    optional.add_argument("-l", "--log", help="Set the logging output location", action="store",
+                          type=argparse.FileType('w'), default=sys.stderr)
     optional.add_argument("-V", "--version", action="version", version="1.0")
     parser._action_groups.append(optional)
     args = parser.parse_args()
@@ -166,7 +176,7 @@ if __name__ == "__main__":
     if args.silent:
         loglvl = logging.ERROR
     elif not args.verbose:
-        loglvl = logging.WARNING
+        pass
     elif args.verbose >= 2:
         loglvl = logging.DEBUG
     elif args.verbose == 1:
@@ -180,7 +190,7 @@ if __name__ == "__main__":
     except Exception as ex:
         exitcode = 1
         logging.error(ex)
-        logging.debug(sys.exc_info())
+        logging.debug(format_exc())
     finally:
         logging.debug("Shutting down logging system ...")
         logging.shutdown()
