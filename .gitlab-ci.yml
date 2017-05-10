@@ -10,6 +10,7 @@ before_script:
     - conda config --add channels bioconda
     - conda config --add channels etetoolkit
 #    - conda install -q snakemake r-base r-ggplot2 r-scales
+    - pip install pyyaml
 
 test_job:
   stage: test
