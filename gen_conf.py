@@ -30,22 +30,22 @@ def make_config(config, dataloc):
     yaml.add_representer(OrderedDict, represent_dict_order)
 
     conf = OrderedDict()
-    conf["project"] = "mg-preprocess"
-    conf["run-fastqc"] = False
-    conf["run-krona"] = False
-    conf["kaiju"] = {
-        "db": "/mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr",
-        "match-mode": "greedy",
-        "max-sub": 2,
-        "min-matchlen": 11,
-        "min-matchscore": 65,
-        "otu-file": "otus.txt"
-    }
-    conf["khmer"] = {
-        "k-size": 20,
-        "max-gb-ram": 256,
-        "depth-cutoff": 20
-    }
+#    conf["project"] = "mg-preprocess"
+#    conf["run-fastqc"] = False
+#    conf["run-krona"] = False
+#    conf["kaiju"] = {
+#        "db": "/mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr",
+#        "match-mode": "greedy",
+#        "max-sub": 2,
+#        "min-matchlen": 11,
+#        "min-matchscore": 65,
+#        "otu-file": "otus.txt"
+#    }
+#    conf["khmer"] = {
+#        "k-size": 20,
+#        "max-gb-ram": 256,
+#        "depth-cutoff": 20
+#    }
 
     samples = get_sample_files(dataloc)
     logging.info("Found %d samples under %s" % (len(samples), dataloc))
@@ -58,4 +58,4 @@ def make_config(config, dataloc):
 
 if __name__ == "__main__":
     path = os.path.abspath(sys.argv[1])
-    make_config(config="config.yaml", dataloc=path)
+    make_config(config=sys.argv[2], dataloc=path)
