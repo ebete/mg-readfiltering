@@ -8,8 +8,8 @@ Please follow the [NIOO project skeleton](https://gitlab.bioinf.nioo.knaw.nl/nio
 
 Start off by cloning the git project into the `analysis/` directory and moving into the project directory:
 ```sh
-git clone https://ThomG@gitlab.bioinf.nioo.knaw.nl/ThomG/mg-readfiltering.git analysis/
-cd analysis/
+$ git clone https://ThomG@gitlab.bioinf.nioo.knaw.nl/ThomG/mg-readfiltering.git analysis/
+$ cd analysis/
 ```
 
 ### Naming raw read files
@@ -26,7 +26,7 @@ Snakemake needs to understand where the files are and which parameters to use in
 We use the script `gen_conf.py` to generate a configuration file like this:
 ```sh
 # we assume that the raw reads are stored in ../data/
-python3 gen_conf.py ../data/ readdata.yaml
+$ python3 gen_conf.py ../data/ readdata.yaml
 ```
 If all goes well, this script should generate the file `readdata.yaml`.
 It contains the location and some metadata about the raw read files.
@@ -34,7 +34,7 @@ It contains the location and some metadata about the raw read files.
 The file `config.yaml` contains the parameters used by the pipeline and should not be moved/renamed.
 You can view/edit this file with a text editor like `nano`:
 ```sh
-nano config.yaml
+$ nano config.yaml
 ```
 By default, the contents of this file look like this:
 ```yaml
@@ -63,7 +63,7 @@ You cannot remove/rename entries and the indentation should also stay the same.
 ### Running the pipeline
 Once the project has been set up, use the following command to run the pipeline:
 ```sh
-snakemake --use-conda --resources high_diskio=4 --configfile readdata.yaml --cores 8
+$ snakemake --use-conda --resources high_diskio=4 --configfile readdata.yaml --cores 8
 ```
 You can increase/decrease the core count if you like, but please do not increase the `high_diskio=4` flag.
 This is to prevent excessive hard disk load.
