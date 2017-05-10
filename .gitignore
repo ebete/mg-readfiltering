@@ -61,7 +61,7 @@ target/
 
 # Snakemake
 .snakemake/
-config.yaml
+#config.yaml
 
 # Temporary files
 *.swp
