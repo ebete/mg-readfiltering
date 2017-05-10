@@ -1,4 +1,4 @@
-# Usage: snakemake --use-conda -p --cores 16 --resources high_diskio=4
+# Usage: snakemake --use-conda -p --cores 16 --resources high_diskio=4 --configfile your_config.yaml
 
 __author__ = "Thom Griffioen"
 __copyright__ = "Copyright 2017 Thom Griffioen"
@@ -13,11 +13,11 @@ configfile: "config.yaml"
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html")        # MultiQC
+    OUTFILES.append("{project}/multiqc/qc_report.html")          # MultiQC
 if config["run-krona"]:
-    OUTFILES.append("{project}/krona/{sample}_{paired}.html")  # Krona
-#OUTFILES.append("{project}/bins/{sample}_{paired}")            # Binning
-#OUTFILES.append("{project}/khmer/{sample}.fq.gz")              # Khmer
+    OUTFILES.append("{project}/krona/{sample}_{paired}.html")    # Krona
+OUTFILES.append("{project}/bins/{sample}_{paired}/binning.done") # Binning
+#OUTFILES.append("{project}/khmer/{sample}.fq.gz")               # Khmer
 
 
 rule all:

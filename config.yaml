@@ -1,14 +1,14 @@
 project: mg-preprocess
-run-fastqc: true
+run-fastqc: false
 run-krona: false
-run-khist: true
+run-khist: false
 kaiju:
   db: /mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr
   match-mode: greedy
   max-sub: 2
   min-matchlen: 11
   min-matchscore: 65
-  otu-file: otus.txt
+  tax-rank: phylum
 khmer:
   depth-cutoff: 20
   k-size: 20
