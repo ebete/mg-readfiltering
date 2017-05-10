@@ -58,7 +58,7 @@ def main(args):
     try:
         logging.info("Opening file handles for %d bins ..." % len(binfiles))
         fhandles = {binname: gzip.open(filename, "wt", compresslevel=4) for binname, filename in binfiles.items()}
-        # bin_reads(fqid2otu, args.input, fhandles)
+        bin_reads(fqid2otu, args.input, fhandles)
     except:
         raise
     finally:
