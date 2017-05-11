@@ -1,3 +1,31 @@
+rule kmer_histogram:
+    input:
+        "{project}/reformatted/{sample}_{paired}.fq.gz"
+    output:
+        "{project}/khmer/{sample}_{paired}.hist"
+    conda:
+        "envs/bbmap.yaml"
+    log:
+        "log/bbmap/{sample}_{paired}_khist.log"
+    threads: 8
+    resources: high_diskio=4 # Limit disk IO
+    params:
+        kmer = config["khmer"]["k-size"],
+        max_mem = "-Xmx{}G".format(config["khmer"]["max-gb-ram"])
+    shell:
+        "khist.sh {params.max_mem} threads={threads} in={input} hist={output} k={params.kmer} 2> {log}"
+
+
+rule kmer_histo_graph:
+    input:
+        "{project}/khmer/{sample}_{paired}.hist"
+    output:
+        "{project}/khmer/{sample}_{paired}.hist.pdf"
+    threads: 1
+    script:
+        "kmer_dist.R"
+
+
 rule khmer_diginorm:
     input:
         paired = "{project}/reformatted/{sample}_paired.fq.gz",
