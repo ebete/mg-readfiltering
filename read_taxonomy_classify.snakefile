@@ -44,7 +44,6 @@ rule kaiju_binning:
         kaiju = "{project}/kaiju/{sample}_{paired}.tsv",
         fastq = "{project}/reformatted/{sample}_{paired}.fq.gz"
     output:
-#        "{project}/bins/{sample}_{paired}"
         touch("{project}/bins/{sample}_{paired}/binning.done")
     conda:
         "envs/kaiju.yaml"
@@ -52,9 +51,10 @@ rule kaiju_binning:
         "logs/binning/{sample}_{paired}_binning.log"
     threads: 8
     params:
-        tax_rank = config["kaiju"]["tax-rank"]
+        tax_rank = config["kaiju"]["tax-rank"],
+        outdir = "{project}/bins/{sample}_{paired}"
     shell:
-        "get_kaiju_otu.py -t {params.tax_rank} -k {input.kaiju} -i {input.fastq} -o {output} --threads {threads} -f -vv --log {log}"
+        "get_kaiju_otu.py -t {params.tax_rank} -k {input.kaiju} -i {input.fastq} -o {params.outdir} --threads {threads} -f -vv --log {log}"
 
 
 rule kaiju_krona:
