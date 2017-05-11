@@ -5,13 +5,13 @@ stages:
   - test
 
 before_script:
-    - conda config --add channels default
+    - conda config --add channels defaults
     - conda config --add channels conda-forge
     - conda config --add channels r
     - conda config --add channels bioconda
     - conda config --add channels etetoolkit
     - conda install -q snakemake #r-base r-ggplot2 r-scales
-    - pip install pyyaml ete3 scipy biopython
+    - conda install pyyaml ete3 scipy biopython
 
 test_job:
   stage: test
