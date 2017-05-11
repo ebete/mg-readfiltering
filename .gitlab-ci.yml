@@ -11,7 +11,7 @@ before_script:
     - conda config --add channels bioconda
     - conda config --add channels etetoolkit
     - conda install -q snakemake #r-base r-ggplot2 r-scales
-    - conda install pyyaml ete3 scipy biopython
+    - conda install -q pyyaml ete3 scipy biopython
 
 test_job:
   stage: test
