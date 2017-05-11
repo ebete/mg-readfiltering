@@ -16,7 +16,7 @@ if config["run-fastqc"]:
     OUTFILES.append("{project}/multiqc/qc_report.html")          # MultiQC
 if config["run-krona"]:
     OUTFILES.append("{project}/krona/{sample}_{paired}.html")    # Krona
-OUTFILES.append("{project}/bins/{sample}_{paired}/binning.done") # Binning
+OUTFILES.append("{project}/bins/merged/binmerge.done")           # Binning
 #OUTFILES.append("{project}/khmer/{sample}.fq.gz")               # Khmer
 
 
