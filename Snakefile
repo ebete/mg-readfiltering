@@ -17,7 +17,7 @@ if config["run-fastqc"]:
 if config["run-krona"]:
     OUTFILES.append("{project}/krona/{sample}_{paired}.html")     # Krona
 if config["run-khist"]:
-    OUTFILES.append("{project}/khmer/{sample}_{paired}.hist.pdf") # BBMap khist
+    OUTFILES.append("{project}/khmer/kdepth.done")                # BBMap khist
 OUTFILES.append("{project}/bins/merged/binmerge.done")            # Binning
 
 

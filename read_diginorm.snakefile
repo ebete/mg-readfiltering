@@ -18,12 +18,14 @@ rule kmer_histogram:
 
 rule kmer_histo_graph:
     input:
-        "{project}/khmer/{sample}_{paired}.hist"
+        expand("{{project}}/khmer/{sample}_{paired}.hist", sample=config["data"], paired=["paired", "unpaired"])
     output:
-        "{project}/khmer/{sample}_{paired}.hist.pdf"
+        done = "{project}/khmer/kdepth.done",
+        pdf = "{project}/khmer/multi_hist.pdf",
+        png = "{project}/khmer/multi_hist.png"
     threads: 1
     script:
-        "kmer_dist.R"
+        "khist_plot_retention.R"
 
 
 rule khmer_diginorm:
