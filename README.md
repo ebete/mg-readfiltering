@@ -8,14 +8,14 @@ Please follow the [NIOO project skeleton](https://gitlab.bioinf.nioo.knaw.nl/nio
 
 Start off by cloning the git project into the `analysis/` directory and moving into the project directory:
 ```sh
-$ git clone https://ThomG@gitlab.bioinf.nioo.knaw.nl/ThomG/mg-readfiltering.git analysis/
+$ git clone git@gitlab.bioinf.nioo.knaw.nl:ThomG/mg-readfiltering.git
 $ cd analysis/
 ```
 
 ### Naming raw read files
 The file names for the raw data has to follow a strict set of rules.
 The naming format is as follows:
-```txt
+```
 {SAMPLE-ID}_{READ-DIRECTION}.fq.gz
 ```
 where `{SAMPLE-ID}` should be replaced by a unique identifier for each sample (e.g. `MG1`, `MG2`, etc...) and `{READ-DIRECTION}` with the direction of the read (i.e. `forward` or `reverse`).
@@ -31,7 +31,7 @@ $ python3 gen_conf.py ../data/ readdata.yaml
 If all goes well, this script should generate the file `readdata.yaml`.
 It contains the location and some metadata about the raw read files.
 
-The file `config.yaml` contains the parameters used by the pipeline and should not be moved/renamed.
+The file [config.yaml](config.yaml) contains the parameters used by the pipeline and should not be moved/renamed.
 You can view/edit this file with a text editor like `nano`:
 ```sh
 $ nano config.yaml
@@ -42,6 +42,7 @@ project: mg-readfiltering
 run-fastqc: false
 run-krona: false
 run-khist: false
+run-diginorm: false
 kaiju:
   db: /mnt/zfs/data/kaiju_nr
   match-mode: greedy
