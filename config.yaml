@@ -1,7 +1,8 @@
 project: mg-preprocess
 run-fastqc: false
 run-krona: false
-run-khist: true
+run-khist: false
+run-diginorm: false
 kaiju:
   db: /mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr
   match-mode: greedy

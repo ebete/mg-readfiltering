@@ -20,9 +20,10 @@ rule kmer_histo_graph:
     input:
         expand("{{project}}/khmer/{sample}_{paired}.hist", sample=config["data"], paired=["paired", "unpaired"])
     output:
-        done = "{project}/khmer/kdepth.done",
-        pdf = "{project}/khmer/multi_hist.pdf",
-        png = "{project}/khmer/multi_hist.png"
+        done = touch("{project}/khmer/kdepth.done"),
+        pdf = "{project}/khmer/multi_hist.pdf"
+    conda:
+        "envs/r.yaml"
     threads: 1
     script:
         "khist_plot_retention.R"

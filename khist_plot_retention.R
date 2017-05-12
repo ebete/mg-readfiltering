@@ -6,19 +6,16 @@
 # Reads the histogram files from BBMap khist.sh and
 # displays a plot signifying the k-mer retention rate for
 # a given minimum k-mer depth.
-# 
-# 
-# Usage: Rscript khist_plot_retention.R KHIST_FILE [KHIST_FILE2 ...]
 
 pdf(NULL)
 library(ggplot2)
 library(scales)
+library(tools)
 
 yscale <- function(x) { sprintf("%.2f%%", x*100) }
 
 filesin <- snakemake@input
 pdfout <- snakemake@output[["pdf"]]
-pngout <- snakemake@output[["png"]]
 
 histdata <- data.frame(histfile=NA, depth=NA, kcount=NA, kfreq=NA, cfreq=NA)
 
@@ -29,7 +26,8 @@ for(arg in 1:length(filesin)) {
     kmersum <- sum(as.numeric(indata[, 2]))
     kmerfreq <- indata[, 2]/kmersum
     cumulative_frac <- cumsum(kmerfreq)
-    histdata <- rbind(histdata, data.frame(histfile=filesin[[arg]], depth=indata[, 1], kcount=indata[, 2], kfreq=kmerfreq, cfreq=1-cumulative_frac))
+    gname <- file_path_sans_ext(basename(filesin[[arg]]))
+    histdata <- rbind(histdata, data.frame(histfile=gname, depth=indata[, 1], kcount=indata[, 2], kfreq=kmerfreq, cfreq=1-cumulative_frac))
 }
 histdata <- histdata[complete.cases(histdata), ]
 
@@ -57,5 +55,4 @@ ggplot(histdata, aes(x=depth, y=cfreq, colour=histfile)) +
         legend.key = element_rect(fill=NA), legend.background=element_rect(fill=NA)
     )
 
-ggsave(pdfout, width=10, height=7, device=cairo_pdf)
-ggsave(pngout, width=10, height=7, device=cairo_pdf)
+ggsave(pdfout, width=10, height=7)
