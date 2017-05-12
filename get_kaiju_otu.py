@@ -77,9 +77,9 @@ def get_bin_output_files(binnames, outdir, prefix, overwrite):
     binfiles = {}
     namepattern = re.compile("[\W]+")
     for names in binnames:
-        fname = prefix + names.lower()
-        fname = namepattern.sub("", fname)
-        flocation = os.path.join(outdir, fname + ".fq.gz")
+        fname = namepattern.sub("", names.lower())
+        fname = prefix + fname + ".fq.gz"
+        flocation = os.path.join(outdir, fname)
         binfiles[names] = flocation
     for path in binfiles.values():
         if os.path.exists(path):
