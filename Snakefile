@@ -13,11 +13,14 @@ configfile: "config.yaml"
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html")          # MultiQC
+    OUTFILES.append("{project}/multiqc/qc_report.html")           # FastQC > MultiQC
 if config["run-krona"]:
-    OUTFILES.append("{project}/krona/{sample}_{paired}.html")    # Krona
-OUTFILES.append("{project}/bins/{sample}_{paired}/binning.done") # Binning
-#OUTFILES.append("{project}/khmer/{sample}.fq.gz")               # Khmer
+    OUTFILES.append("{project}/krona/{sample}_{paired}.html")     # Kaiju > Krona
+if config["run-khist"]:
+    OUTFILES.append("{project}/khmer/kdepth.done")                # BBMap khist > R
+#if config["run-diginorm"]:
+#    OUTFILES.append("{project}/khmer/{sample}.fq.gz")             # Khmer digital normalisation
+OUTFILES.append("{project}/bins/merged/binmerge.done")            # Kaiju > Binning
 
 
 rule all:
@@ -25,7 +28,7 @@ rule all:
         expand(OUTFILES, project=config["project"], sample=config["data"], paired=["paired", "unpaired"], direction=["forward", "reverse"])
 
 
+include: "read_reformat.snakefile"
 include: "read_qc.snakefile"
 include: "read_taxonomy_classify.snakefile"
-include: "read_reformat.snakefile"
 include: "read_diginorm.snakefile"

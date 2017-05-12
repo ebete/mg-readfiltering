@@ -48,13 +48,30 @@ rule kaiju_binning:
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/binning/{sample}_{paired}_binning.log"
+        "logs/bins/{sample}_{paired}_binning.log"
     threads: 8
     params:
         tax_rank = config["kaiju"]["tax-rank"],
         outdir = "{project}/bins/{sample}_{paired}"
     shell:
         "get_kaiju_otu.py -t {params.tax_rank} -k {input.kaiju} -i {input.fastq} -o {params.outdir} --threads {threads} -f -vv --log {log}"
+
+
+rule bin_merge:
+    input:
+        expand("{{project}}/bins/{sample}_paired/binning.done", sample=config["data"])
+    output:
+        touch("{project}/bins/merged/binmerge.done")
+    log:
+        "logs/bins/merge.log"
+    threads: 1
+    resources:
+        high_diskio = 1
+    params:
+        indirs = expand("{project}/bins/{sample}_paired/", project=config["project"], sample=config["data"]),
+        outdir = "{project}/bins/merged/"
+    shell:
+        "./finddups.py {params.indirs} {params.outdir} 2> {log}"
 
 
 rule kaiju_krona:
