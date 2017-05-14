@@ -4,11 +4,21 @@ from ete3 import NCBITaxa
 from queue import Queue
 from threading import Thread
 
+"""
+MIT License
+Copyright (c) 2017 Thom Griffioen
+
+Author: Thom Griffioen
+Date: 2017-05-09
+"""
+
 
 tax_ranks = (
     "superkingdom", "kingdom", "phylum", "subphylum", "class", "subclass", "order", "family", "genus", "species")
 
 
+# Adapted from Chris Hager's Python Thread Pool
+# https://www.metachris.com/2016/04/python-threadpool/
 class Worker(Thread):
     """ Thread executing tasks from a given tasks queue """
     def __init__(self, tasks):
@@ -22,11 +32,6 @@ class Worker(Thread):
             func, args, kargs = self.tasks.get()
             try:
                 func(*args, **kargs)
-            # except Exception as e:
-            #     # An exception happened in this thread
-            #     print(e)
-            except:
-                raise
             finally:
                 # Mark this task as done, whether an exception happened or not
                 self.tasks.task_done()
