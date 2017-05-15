@@ -8,7 +8,7 @@ Please follow the [NIOO project skeleton](https://gitlab.bioinf.nioo.knaw.nl/nio
 
 Start off by cloning the git project into the `analysis/` directory and moving into the project directory:
 ```sh
-$ git clone git@gitlab.bioinf.nioo.knaw.nl:ThomG/mg-readfiltering.git
+$ git clone git@gitlab.bioinf.nioo.knaw.nl:ThomG/mg-readfiltering.git analysis/
 $ cd analysis/
 ```
 
@@ -64,7 +64,7 @@ trimmomatic:
   trailing-min-quality: 3
   min-length: 100
 kaiju:
-  db: /mnt/zfs/data/kaiju_nr
+  db: /mnt/zfs/data_other/db/kaiju_nr
   match-mode: greedy
   max-sub: 2
   min-matchlen: 11
@@ -77,9 +77,10 @@ khmer:
 ```
 You can edit the name of the output directory by editing the `project` entry.
 The `run-*` entries can be set to `true` or `false` and will enable/disable parts of the pipeline.
-The `kaiju` and `khmer` entries both contain some parameters you can change that are passed to the programs.
+The `trimmomatic`, `kaiju` and `khmer` entries contain some parameters you can change that are passed to the programs.
+Check the documentation of the tools to learn what the parameters do.
 Be careful when editing this file.
-You cannot remove/rename entries and the indentation should also stay the same.
+You should not remove/rename entries and the indentation should also stay the same.
 
 ### Running the pipeline
 Once the project has been set up, use the following command to run the pipeline:
