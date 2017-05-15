@@ -3,6 +3,19 @@ run-fastqc: false
 run-krona: false
 run-khist: false
 run-diginorm: false
+run-binning: false
+trimmomatic:
+  adapters: /mnt/zfs/data_other/tools/Trimmomatic/0.36/adapters/NexteraPE-PE.fa
+  seed-mismatch: 2
+  palindrome-clip-threshold: 30
+  simple-clip-threshold: 10
+  min-adapter-length: 8
+  keep-both-reads: false
+  window-size: 4
+  required-quality: 30
+  leading-min-quality: 3
+  trailing-min-quality: 3
+  min-length: 100
 kaiju:
   db: /mnt/zfs/ngs2/ME2/raaijmakers_group/thomg/kaiju_nr
   match-mode: greedy

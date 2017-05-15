@@ -1,7 +1,7 @@
 rule kaiju_paired:
     input:
-        forward = lambda wildcards: config["data"][wildcards.sample]["forward"]["paired"],
-        reverse = lambda wildcards: config["data"][wildcards.sample]["reverse"]["paired"]
+        forward = "{project}/trimmomatic/{sample}_forward_paired.fq.gz",
+        reverse = "{project}/trimmomatic/{sample}_reverse_paired.fq.gz"
     output:
         "{project}/kaiju/{sample}_paired.tsv"
     conda:

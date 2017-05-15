@@ -1,6 +1,6 @@
 rule qc_reads:
     input:
-        lambda wildcards: config["data"][wildcards.sample][wildcards.direction][wildcards.paired]
+        "{project}/trimmomatic/{sample}_{direction}_{paired}.fq.gz"
     output:
         html="{project}/fastqc/{sample}_{direction}_{paired}_fastqc.html",
         zip="{project}/fastqc/{sample}_{direction}_{paired}_fastqc.zip"
