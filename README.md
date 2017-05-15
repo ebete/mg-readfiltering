@@ -91,4 +91,4 @@ This is to prevent excessive hard disk load.
 It is also possible to execute a dry-run (only showing what the pipeline intents to run without doing anything) by adding the `-n` flag (use `-p` if you want to see the actual commands).
 
 Depending on the amount of data and your settings, it will take some time to finish running (days to weeks).
-Once finished, all the results can be found in the project directory you specified in the `config.yaml` file.
+Once finished, all the results can be found in the project directory you specified in the [config.yaml](config.yaml) file.
