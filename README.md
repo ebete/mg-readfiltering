@@ -13,12 +13,19 @@ $ cd analysis/
 ```
 
 ### Naming raw read files
-The file names for the raw data has to follow a strict set of rules.
-The naming format is as follows:
+The file names for the raw data has to follow some rules so the program understands what the data is.
+- The files have to be gzipped (`.gz`) or bzipped (`.bz2`).
+- They have to be in FASTQ format (`.fq`/`.fastq`).
+- The pairs have to have the same name except for the `_R1`/`_R2` part (also allowed: `_r1`/`_r2`, `_1`/`_2`).
+
+Example of valid file names:
 ```
-{SAMPLE-ID}_{READ-DIRECTION}.fq.gz
+Read file 1:
+  I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R1_001.fastq.bz2
+Read file 2:
+  I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R2_001.fastq.bz2
 ```
-where `{SAMPLE-ID}` should be replaced by a unique identifier for each sample (e.g. `MG1`, `MG2`, etc...) and `{READ-DIRECTION}` with the direction of the read (i.e. `forward` or `reverse`).
+The identifier for this pair will be `MT27`.
 Place these files in the `data/` directory of your project.
 
 ### Creating and editing the configuration files
@@ -43,6 +50,19 @@ run-fastqc: false
 run-krona: false
 run-khist: false
 run-diginorm: false
+run-binning: false
+trimmomatic:
+  adapters: /mnt/zfs/data_other/tools/Trimmomatic/0.36/adapters/NexteraPE-PE.fa
+  seed-mismatch: 2
+  palindrome-clip-threshold: 30
+  simple-clip-threshold: 10
+  min-adapter-length: 8
+  keep-both-reads: false
+  window-size: 4
+  required-quality: 30
+  leading-min-quality: 3
+  trailing-min-quality: 3
+  min-length: 100
 kaiju:
   db: /mnt/zfs/data/kaiju_nr
   match-mode: greedy
@@ -56,7 +76,7 @@ khmer:
   max-gb-ram: 256
 ```
 You can edit the name of the output directory by editing the `project` entry.
-The three `run-*` entries can be set to `true` or `false` and will enable/disable parts of the pipeline.
+The `run-*` entries can be set to `true` or `false` and will enable/disable parts of the pipeline.
 The `kaiju` and `khmer` entries both contain some parameters you can change that are passed to the programs.
 Be careful when editing this file.
 You cannot remove/rename entries and the indentation should also stay the same.
@@ -71,4 +91,4 @@ This is to prevent excessive hard disk load.
 It is also possible to execute a dry-run (only showing what the pipeline intents to run without doing anything) by adding the `-n` flag (use `-p` if you want to see the actual commands).
 
 Depending on the amount of data and your settings, it will take some time to finish running (days to weeks).
-Once finished, all the results can be found in the project directory you specified in the `config.yaml` file.
+Once finished, all the results can be found in the project directory you specified in the [config.yaml](config.yaml) file.

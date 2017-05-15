@@ -11,7 +11,8 @@ min_version("3.11.0")
 
 configfile: "config.yaml"
 OUTFILES = []
-OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
+OUTFILES.append("{project}/trimmomatic/{sample}_{direction}_{paired}.fq.gz")
+#OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
     OUTFILES.append("{project}/multiqc/qc_report.html")           # FastQC > MultiQC
 if config["run-krona"]:
@@ -20,7 +21,8 @@ if config["run-khist"]:
     OUTFILES.append("{project}/khmer/kdepth.done")                # BBMap khist > R
 #if config["run-diginorm"]:
 #    OUTFILES.append("{project}/khmer/{sample}.fq.gz")             # Khmer digital normalisation
-OUTFILES.append("{project}/bins/merged/binmerge.done")            # Kaiju > Binning
+if config["run-binning"]:
+    OUTFILES.append("{project}/bins/merged/binmerge.done")        # Kaiju > Binning
 
 
 rule all:
@@ -28,6 +30,7 @@ rule all:
         expand(OUTFILES, project=config["project"], sample=config["data"], paired=["paired", "unpaired"], direction=["forward", "reverse"])
 
 
+include: "read_trim.snakefile"
 include: "read_reformat.snakefile"
 include: "read_qc.snakefile"
 include: "read_taxonomy_classify.snakefile"
