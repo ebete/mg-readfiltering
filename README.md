@@ -17,6 +17,7 @@ The file names for the raw data has to follow some rules so the program understa
 - The files have to be gzipped (`.gz`) or bzipped (`.bz2`).
 - They have to be in FASTQ format (`.fq`/`.fastq`).
 - The pairs have to have the same name except for the `_R1`/`_R2` part (also allowed: `_r1`/`_r2`, `_1`/`_2`).
+
 Example of valid file names:
 ```
 Read file 1:
@@ -49,6 +50,19 @@ run-fastqc: false
 run-krona: false
 run-khist: false
 run-diginorm: false
+run-binning: false
+trimmomatic:
+  adapters: /mnt/zfs/data_other/tools/Trimmomatic/0.36/adapters/NexteraPE-PE.fa
+  seed-mismatch: 2
+  palindrome-clip-threshold: 30
+  simple-clip-threshold: 10
+  min-adapter-length: 8
+  keep-both-reads: false
+  window-size: 4
+  required-quality: 30
+  leading-min-quality: 3
+  trailing-min-quality: 3
+  min-length: 100
 kaiju:
   db: /mnt/zfs/data/kaiju_nr
   match-mode: greedy
