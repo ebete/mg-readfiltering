@@ -6,7 +6,7 @@ rule kmer_histogram:
     conda:
         "envs/bbmap.yaml"
     log:
-        "log/bbmap/{sample}_{paired}_khist.log"
+        "{project}/logs/bbmap/{sample}_{paired}_khist.log"
     threads: 8
     resources: high_diskio=4 # Limit disk IO
     params:
@@ -39,7 +39,7 @@ rule khmer_diginorm:
     conda:
         "envs/khmer.yaml"
     log:
-        "logs/khmer/{sample}_diginorm.log"
+        "{project}/logs/khmer/{sample}_diginorm.log"
     threads: 1
     resources: high_diskio=2 # Limit disk IO
     params:

@@ -8,7 +8,7 @@ rule reformat_paired:
     conda:
         "envs/bbmap.yaml"
     log:
-        "logs/bbmap/{sample}_reformat_pairs.log"
+        "{project}/logs/bbmap/{sample}_reformat_pairs.log"
     threads: 4
     resources: high_diskio=4 # Limit disk IO
     shell:
@@ -21,8 +21,6 @@ rule merge_unpaired:
         reverse = "{project}/trimmomatic/{sample}_reverse_unpaired.fq.gz"
     output:
         "{project}/reformatted/{sample}_unpaired.fq.gz" # TODO: make temp later
-    log:
-        "logs/bbmap/{sample}_reformat_unpaired.log"
     threads: 1
     resources: high_diskio=4 # Limit disk IO
     shell:

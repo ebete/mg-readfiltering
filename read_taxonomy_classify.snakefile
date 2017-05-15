@@ -7,7 +7,7 @@ rule kaiju_paired:
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/kaiju/{sample}_paired.log"
+        "{project}/logs/kaiju/{sample}_paired.log"
     threads: 8
     params:
         kaiju_files = "-t {0}/nodes.dmp -f {0}/kaiju_db_nr_euk.fmi".format(config["kaiju"]["db"]),
@@ -27,7 +27,7 @@ rule kaiju_unpaired:
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/kaiju/{sample}_unpaired.log"
+        "{project}/logs/kaiju/{sample}_unpaired.log"
     threads: 8
     params:
         kaiju_files = "-t {0}/nodes.dmp -f {0}/kaiju_db_nr_euk.fmi".format(config["kaiju"]["db"]),
@@ -48,7 +48,7 @@ rule kaiju_binning:
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/bins/{sample}_{paired}_binning.log"
+        "{project}/logs/bins/{sample}_{paired}_binning.log"
     threads: 8
     params:
         tax_rank = config["kaiju"]["tax-rank"],
@@ -63,7 +63,7 @@ rule bin_merge:
     output:
         touch("{project}/bins/merged/binmerge.done")
     log:
-        "logs/bins/merge.log"
+        "{project}/logs/bins/merge.log"
     threads: 1
     resources:
         high_diskio = 1
@@ -83,7 +83,7 @@ rule kaiju_krona:
     conda:
         "envs/kaiju.yaml"
     log:
-        "logs/krona/{sample}_{paired}.log"
+        "{project}/logs/krona/{sample}_{paired}.log"
     threads: 1
     params:
         kaiju_files = "-t {0}/nodes.dmp -n {0}/names.dmp".format(config["kaiju"]["db"])
