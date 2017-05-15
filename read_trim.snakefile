@@ -37,7 +37,7 @@ rule trimmomatic:
         trailing = config["trimmomatic"]["trailing-min-quality"],
         min_len = config["trimmomatic"]["min-length"]
     log:
-        "{project}/trimmomatic/{sample}.log" 
+        "logs/trimmomatic/{sample}.log" 
     threads: 16
     shell:
         "trimmomatic PE -threads {threads} -phred33 {input.forward} {input.reverse} {output.fw_paired} {output.fw_unpaired} {output.rev_paired} {output.rev_unpaired} ILLUMINACLIP:{params.adapters}:{params.max_mismatch}:{params.palindrome_threshold}:{params.simple_threshold}:{params.min_adapter_len}:{params.keep_pair} LEADING:{params.leading} TRAILING:{params.trailing} SLIDINGWINDOW:{params.window_size}:{params.avg_quality} MINLEN:{params.min_len} 2> {log}"

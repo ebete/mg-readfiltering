@@ -13,12 +13,18 @@ $ cd analysis/
 ```
 
 ### Naming raw read files
-The file names for the raw data has to follow a strict set of rules.
-The naming format is as follows:
+The file names for the raw data has to follow some rules so the program understands what the data is.
+- The files have to be gzipped (`.gz`) or bzipped (`.bz2`).
+- They have to be in FASTQ format (`.fq`/`.fastq`).
+- The pairs have to have the same name except for the `_R1`/`_R2` part (also allowed: `_r1`/`_r2`, `_1`/`_2`).
+Example of valid file names:
 ```
-{SAMPLE-ID}_{READ-DIRECTION}.fq.gz
+Read file 1:
+  I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R1_001.fastq.bz2
+Read file 2:
+  I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R2_001.fastq.bz2
 ```
-where `{SAMPLE-ID}` should be replaced by a unique identifier for each sample (e.g. `MG1`, `MG2`, etc...) and `{READ-DIRECTION}` with the direction of the read (i.e. `forward` or `reverse`).
+The identifier for this pair will be `MT27`.
 Place these files in the `data/` directory of your project.
 
 ### Creating and editing the configuration files
@@ -56,7 +62,7 @@ khmer:
   max-gb-ram: 256
 ```
 You can edit the name of the output directory by editing the `project` entry.
-The three `run-*` entries can be set to `true` or `false` and will enable/disable parts of the pipeline.
+The `run-*` entries can be set to `true` or `false` and will enable/disable parts of the pipeline.
 The `kaiju` and `khmer` entries both contain some parameters you can change that are passed to the programs.
 Be careful when editing this file.
 You cannot remove/rename entries and the indentation should also stay the same.
