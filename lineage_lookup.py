@@ -8,7 +8,7 @@ from threading import Thread
 MIT License
 Copyright (c) 2017 Thom Griffioen
 
-Author: Thom Griffioen
+Author: Thom Griffioen <t.griffioen@nioo.knaw.nl>
 Date: 2017-05-09
 """
 
