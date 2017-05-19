@@ -22,6 +22,6 @@ test_job:
     - python3 lineage_lookup.py -V
     - python3 lineage_lookup.py
     - python3 gen_conf.py -V
-    - python3 gen_conf.py samples.yaml data/
+    - python3 gen_conf.py data/ samples.yaml
     - cat samples.yaml
     - snakemake --use-conda --configfile samples.yaml -p --cores 1 --resources high_diskio=1 -n
