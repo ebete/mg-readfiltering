@@ -33,7 +33,7 @@ def main(args):
                     print("Skipping %s ... (not a gzipped FASTQ file)" % fname, file=sys.stderr)
                     continue
                 fpath = os.path.join(root, fname)
-                fileoccurences[fname] = fileoccurences.setdefault(fname, 0) + 1
+                fileoccurences[fname] = fileoccurences.get(fname, 0) + 1
                 fout = os.path.join(outdir, fname)
                 print("Appending %s to %s (contains reads from %d bins) ..." % (fpath, fout, fileoccurences[fname]), file=sys.stderr)
                 if os.path.exists(fout) and fileoccurences[fname] <= 1:
