@@ -25,7 +25,7 @@ Read file 1:
 Read file 2:
   I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R2_001.fastq.bz2
 ```
-The identifier for this pair will be `MT27`.
+The identifier for this pair will be `I16-1249-27-MT27-CAGGCGAT-TCTTTCCC-L002-001`.
 Place these files in the `data/` directory of your project.
 
 ### Creating and editing the configuration files
