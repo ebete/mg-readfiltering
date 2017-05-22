@@ -5,12 +5,12 @@ rule recompress:
         forward = temp("{project}/unpack/{sample}_{direction}.fq.gz")
     conda:
         "envs/compression.yaml"
-    threads: 16
+    threads: 8
     resources: high_diskio=4 # Limit disk IO
     params:
         algo = lambda wildcards: config["data"][wildcards.sample][wildcards.direction]["compression"]
     shell:
-        "{params.algo} -p{threads} -dc {input} | pigz -p{threads} > {output}"
+        "{params.algo} -p{threads} -dkc {input} | gzip -c > {output}"
 
 
 rule trimmomatic:
