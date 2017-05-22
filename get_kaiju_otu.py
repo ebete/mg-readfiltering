@@ -23,10 +23,12 @@ Date: 2017-05-09
 """
 _epilog = """
 This program parses the results from Kaiju and attempts to bin the reads. It
-splits based on the taxonomic rank. Processing paired-end reads should not
-be a problem as long as the reads are ordered (i.e. the first and second read
-are a pair, the third and fourth the second pair, etc.). Please make sure that
-the amount of bins created will not exceed the file limit (shown by ulimit -Hn).
+splits based on the taxonomic rank. Processing paired-end reads should not be
+a problem as long as the reads are ordered (i.e. the first and second read are
+a pair, the third and fourth the second pair, etc.). Please make sure that the
+amount of bins created will not exceed the systems limit (shown by ulimit -n).
+You can increase this limit with ulimit -n VALUE, with the maximum value being
+the value of ulimit -Hn.
 """
 
 
@@ -100,15 +102,15 @@ def bin_reads(fqid2bin, fqfile, filehandles):
         previd = ""
         prevotu = "root"
         for record in SeqIO.parse(fin, "fastq"):
+            otu = ""
             if record.id == previd:  # Bins PE reads together
-                # logging.debug("Writing record %s to %s" % (record.id, prevotu))
-                SeqIO.write(record, filehandles[prevotu], "fastq")
+                otu = prevotu
             else:
                 otu = fqid2bin.get(record.id, "root")
-                # logging.debug("Writing record %s to %s" % (record.id, otu))
-                SeqIO.write(record, filehandles[otu], "fastq")
                 previd = record.id
                 prevotu = otu
+            SeqIO.write(record, filehandles[otu], "fastq")
+#            logging.debug("Writing record %s to %s" % (record.id, otu))
 
 
 def get_fqid_taxid(taxrank, kaijufile, workerthreads):
