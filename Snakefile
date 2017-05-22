@@ -11,8 +11,7 @@ min_version("3.11.0")
 
 configfile: "config.yaml"
 OUTFILES = []
-OUTFILES.append("{project}/trimmomatic/{sample}_{direction}_{paired}.fq.gz")
-#OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
+OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
     OUTFILES.append("{project}/multiqc/qc_report.html")           # FastQC > MultiQC
 if config["run-krona"]:
@@ -27,7 +26,7 @@ if config["run-binning"]:
 
 rule all:
     input:
-        expand(OUTFILES, project=config["project"], sample=config["data"], paired=["paired", "unpaired"], direction=["forward", "reverse"])
+        expand(OUTFILES, project=config["project"], sample=config["data"], paired=["paired", "unpaired"], direction=["forward", "reverse"], readdirection=["r1", "r2"])
 
 
 include: "read_trim.snakefile"

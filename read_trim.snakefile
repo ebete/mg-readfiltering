@@ -1,27 +1,30 @@
-rule recompress:
+rule recompress_bz2_and_merge_lanes:
     input:
-        lambda wildcards: config["data"][wildcards.sample][wildcards.direction]["path"]
+        lambda wildcards: config["data"][wildcards.sample][wildcards.readdirection]
     output:
-        forward = temp("{project}/unpack/{sample}_{direction}.fq.gz")
+        "{project}/unpack/{sample}_{readdirection}.fq.gz"
+    message:
+        "Recompressing and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
     conda:
         "envs/compression.yaml"
     threads: 8
     resources: high_diskio=4 # Limit disk IO
-    params:
-        algo = lambda wildcards: config["data"][wildcards.sample][wildcards.direction]["compression"]
     shell:
-        "{params.algo} -p{threads} -dkc {input} | gzip -c > {output}"
+        # Decompression speed does not increase nearly as much as compression with more cores, so keep the core count lower than the compression.
+        "pbzip2 -p2 -dkc {input} | pigz -p{threads} -c > {output}"
 
 
 rule trimmomatic:
     input:
-        forward = "{project}/unpack/{sample}_forward.fq.gz",
-        reverse = "{project}/unpack/{sample}_reverse.fq.gz"
+        forward = "{project}/unpack/{sample}_r1.fq.gz",
+        reverse = "{project}/unpack/{sample}_r2.fq.gz"
     output:
         fw_paired = "{project}/trimmomatic/{sample}_forward_paired.fq.gz",
         fw_unpaired = "{project}/trimmomatic/{sample}_forward_unpaired.fq.gz",
         rev_paired = "{project}/trimmomatic/{sample}_reverse_paired.fq.gz",
         rev_unpaired = "{project}/trimmomatic/{sample}_reverse_unpaired.fq.gz"
+    message:
+        "Trimming adapters from sample {wildcards.sample} ..."
     conda:
         "envs/trimmomatic.yaml"
     params:

@@ -17,16 +17,21 @@ The file names for the raw data has to follow some rules so the program understa
 - The files have to be gzipped (`.gz`) or bzipped (`.bz2`).
 - They have to be in FASTQ format (`.fq`/`.fastq`).
 - The pairs have to have the same name except for the `_R1`/`_R2` part (also allowed: `_r1`/`_r2`, `_1`/`_2`).
+- The reads need an unique sample ID in the format `MGXX` or `MTXX`, where the X is a number.
+- The same sample in a different lane need to have the same sample ID.
 
-Example of valid file names:
+Example of valid file names for paired-end samples with multiple lanes:
 ```
-Read file 1:
+Read direction 1:
+  I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L001_R1_001.fastq.bz2
   I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R1_001.fastq.bz2
-Read file 2:
+Read direction 2:
+  I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L001_R2_001.fastq.bz2
   I16-1249-27-MT27_CAGGCGAT-TCTTTCCC_L002_R2_001.fastq.bz2
 ```
-The identifier for this pair will be `I16-1249-27-MT27-CAGGCGAT-TCTTTCCC-L002-001`.
+The identifier for this pair will be `MT27`.
 Place these files in the `data/` directory of your project.
+You may place the files in subdirectories and `gen_conf.py` will attempt to find all the reads.
 
 ### Creating and editing the configuration files
 Snakemake needs to understand where the files are and which parameters to use in the pipeline.
