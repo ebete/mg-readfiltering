@@ -71,7 +71,7 @@ rule bin_merge:
         indirs = expand("{project}/bins/{sample}_paired/", project=config["project"], sample=config["data"]),
         outdir = "{project}/bins/merged/"
     shell:
-        "./finddups.py {params.indirs} {params.outdir} 2> {log}"
+        "finddups.py {params.indirs} {params.outdir} 2> {log}"
 
 
 rule kaiju_krona:

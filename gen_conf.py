@@ -39,9 +39,10 @@ def replace_last(source_string, replace_what, replace_with):
 
 
 def get_sample_files(path):
+    path = os.path.realpath(path)
     # set valid file extensions
     valid_formats = [".fastq", ".fq"]
-    valid_compressions = ["", ".bz2", ".gz"]
+    valid_compressions = [".bz2", ".gz"]
     valid_ext = []
     for x in valid_formats:
         for y in valid_compressions:
@@ -82,8 +83,8 @@ def get_sample_files(path):
                 r2_path = os.path.join(dir_name, fname.replace("_R1", "_R2").replace("_r1", "_r2"))
                 if not r2_path == fq_path:
                     seen.add(r2_path)
-                    fastq_paths["forward"] = file_metadata(fq_path)
-                    fastq_paths["reverse"] = file_metadata(r2_path)
+                    fastq_paths["r1"] = fq_path
+                    fastq_paths["r2"] = r2_path
 
             # try to find the R1 read in the pair
             if "_R2" in fname or "_r2" in fname or "_2" in fname:
@@ -92,32 +93,22 @@ def get_sample_files(path):
                 r1_path = os.path.join(dir_name, fname.replace("_R2", "_R1").replace("_r2", "_r1"))
                 if not r1_path == fq_path:
                     seen.add(r1_path)
-                    fastq_paths["forward"] = file_metadata(r1_path)
-                    fastq_paths["reverse"] = file_metadata(fq_path)
+                    fastq_paths["r1"] = r1_path
+                    fastq_paths["r2"] = fq_path
 
             if sample_id in samples:
                 logging.warning("Duplicate sample %s was found after renaming; skipping..." % sample_id)
                 continue
 
             sample_id = re.search("(M[GT][\d]{1,2})", sample_id).group(1)
-            logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["forward"]["path"], fastq_paths["reverse"]["path"], sample_id))
-            samples[sample_id] = fastq_paths
+            logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r1"], sample_id))
+            if sample_id != "MG19":
+                continue
+#            samples.setdefault(sample_id, {})[len(samples.get(sample_id, []))] = fastq_paths
+            samples.setdefault(sample_id, {})
+            samples[sample_id].setdefault("r1", []).append(fastq_paths["r1"])
+            samples[sample_id].setdefault("r2", []).append(fastq_paths["r2"])
     return samples
-
-
-def file_metadata(fpath):
-    metadata = {
-        "path": fpath
-    }
-
-    if fpath.endswith(".bz2"):
-        metadata["compression"] = "pbzip2"
-    elif fpath.endswith(".gz"):
-        metadata["compression"] = "pigz2"
-    else:
-        raise Exception("Unknown file compression method.")
-
-    return metadata
 
 
 def make_config(config, dataloc):
