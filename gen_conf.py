@@ -102,9 +102,6 @@ def get_sample_files(path):
 
             sample_id = re.search("(M[GT][\d]{1,2})", sample_id).group(1)
             logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r1"], sample_id))
-            if sample_id != "MG19":
-                continue
-#            samples.setdefault(sample_id, {})[len(samples.get(sample_id, []))] = fastq_paths
             samples.setdefault(sample_id, {})
             samples[sample_id].setdefault("r1", []).append(fastq_paths["r1"])
             samples[sample_id].setdefault("r2", []).append(fastq_paths["r2"])
