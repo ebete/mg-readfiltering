@@ -4,7 +4,7 @@ rule compress_raw_and_merge_lanes:
     output:
         "{project}/unpack/{sample}_{readdirection}.fq.gz"
     message:
-        "Recompressing and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
+        "Compressing (raw > gzip) and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
     conda:
         "envs/compression.yaml"
     threads: 8
@@ -19,7 +19,7 @@ rule recompress_gz_and_merge_lanes:
     output:
         "{project}/unpack/{sample}_{readdirection}.fq.gz"
     message:
-        "Recompressing and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
+        "Recompressing (gzip > gzip) and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
     conda:
         "envs/compression.yaml"
     threads: 8
@@ -35,7 +35,7 @@ rule recompress_bz2_and_merge_lanes:
     output:
         "{project}/unpack/{sample}_{readdirection}.fq.gz"
     message:
-        "Recompressing and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
+        "Recompressing (bzip2 > gzip) and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
     conda:
         "envs/compression.yaml"
     threads: 8
