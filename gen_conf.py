@@ -42,7 +42,7 @@ def get_sample_files(path):
     path = os.path.realpath(path)
     # set valid file extensions
     valid_formats = [".fastq", ".fq"]
-    valid_compressions = [".bz2", ".gz"]
+    valid_compressions = ["", ".bz2", ".gz"]
     valid_ext = []
     for x in valid_formats:
         for y in valid_compressions:
