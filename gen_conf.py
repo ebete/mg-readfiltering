@@ -42,7 +42,7 @@ def get_sample_files(path):
     path = os.path.realpath(path)
     # set valid file extensions
     valid_formats = [".fastq", ".fq"]
-    valid_compressions = [".bz2", ".gz"]
+    valid_compressions = ["", ".bz2", ".gz"]
     valid_ext = []
     for x in valid_formats:
         for y in valid_compressions:
@@ -52,6 +52,7 @@ def get_sample_files(path):
 
     samples = OrderedDict()
     seen = set()
+    compress_algo = []
     for dir_name, sub_dirs, files in os.walk(path):
         logging.debug("dir_name: %s" % dir_name)
         logging.debug("sub_dirs: %s" % sub_dirs)
@@ -99,13 +100,22 @@ def get_sample_files(path):
             if sample_id in samples:
                 logging.warning("Duplicate sample %s was found after renaming; skipping..." % sample_id)
                 continue
+            
+            # note compression method
+            compress_algo.append(os.path.splitext(fastq_paths["r1"])[1])
+            compress_algo.append(os.path.splitext(fastq_paths["r2"])[1])
 
             sample_id = re.search("(M[GT][\d]{1,2})", sample_id).group(1)
             logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r1"], sample_id))
             samples.setdefault(sample_id, {})
             samples[sample_id].setdefault("r1", []).append(fastq_paths["r1"])
             samples[sample_id].setdefault("r2", []).append(fastq_paths["r2"])
-    return samples
+
+    compress_algo = list(set(compress_algo))
+    if len(compress_algo) > 1:
+        raise Exception("Multiple compression methods used at the same time. This is not supported.")
+
+    return samples, str(compress_algo[0])[1:]
 
 
 def make_config(config, dataloc):
@@ -113,8 +123,10 @@ def make_config(config, dataloc):
     represent_dict_order = lambda self, data: self.represent_mapping('tag:yaml.org,2002:map', data.items())
     yaml.add_representer(OrderedDict, represent_dict_order)
     conf = OrderedDict()
-    samples = get_sample_files(dataloc)
+    samples, compressmethod = get_sample_files(dataloc)
     logging.info("Found %d samples under %s" % (len(samples), dataloc))
+    logging.info("Compression method detected: %s" % compressmethod)
+    conf["compression"] = compressmethod
     conf["data"] = samples
     with open(config, "w") as f:
         logging.info("Writing config to %s ..." % config)

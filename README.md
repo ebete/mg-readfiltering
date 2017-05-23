@@ -14,7 +14,8 @@ $ cd analysis/
 
 ### Naming raw read files
 The file names for the raw data has to follow some rules so the program understands what the data is.
-- The files have to be gzipped (`.gz`) or bzipped (`.bz2`).
+- The only allowed compression method is gzip (`.gz`) and bzip (`.bz2`).
+- The same compression method has to be used for all files.
 - They have to be in FASTQ format (`.fq`/`.fastq`).
 - The pairs have to have the same name except for the `_R1`/`_R2` part (also allowed: `_r1`/`_r2`, `_1`/`_2`).
 - The reads need an unique sample ID in the format `MGXX` or `MTXX`, where the X is a number.
