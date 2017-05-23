@@ -16,7 +16,7 @@ rule kaiju_paired:
         min_matchlen = config["kaiju"]["min-matchlen"],
         min_matchscore = config["kaiju"]["min-matchscore"]
     shell:
-        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(pigz -t 1 -cd {input.forward}) -j <(pigz -t 1 -cd {input.reverse}) -v -o {output} 2> {log}"
+        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(pigz -p2 -cd {input.forward}) -j <(pigz -p2 -cd {input.reverse}) -v -o {output} 2> {log}"
 
 
 rule kaiju_unpaired:
@@ -36,7 +36,7 @@ rule kaiju_unpaired:
         min_matchlen = config["kaiju"]["min-matchlen"],
         min_matchscore = config["kaiju"]["min-matchscore"]
     shell:
-        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(pigz -t 1 -cd {input}) -v -o {output} 2> {log}"
+        "kaiju -z {threads} {params.kaiju_files} -a {params.mode} -e {params.max_substitutions} -m {params.min_matchlen} -s {params.min_matchscore} -i <(pigz -p2 -cd {input}) -v -o {output} 2> {log}"
 
 
 rule kaiju_binning:

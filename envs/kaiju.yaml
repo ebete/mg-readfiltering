@@ -1,8 +1,10 @@
 channels:
-  - conda-forge
-  - bioconda
   - etetoolkit
+  - bioconda
+  - conda-forge
+  - defaults
 dependencies:
+  - pigz>=2.0
   - kaiju>=1.4.5
   - krona>=2.7
   - perl>=5.22
