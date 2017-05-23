@@ -1,3 +1,34 @@
+rule compress_raw_and_merge_lanes:
+    input:
+        lambda wildcards: config["data"][wildcards.sample][wildcards.readdirection]
+    output:
+        "{project}/unpack/{sample}_{readdirection}.fq.gz"
+    message:
+        "Recompressing and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
+    conda:
+        "envs/compression.yaml"
+    threads: 8
+    resources: high_diskio=4 # Limit disk IO
+    shell:
+        "pigz -p{threads} -kc {input} > {output}"
+
+
+rule recompress_gz_and_merge_lanes:
+    input:
+        lambda wildcards: config["data"][wildcards.sample][wildcards.readdirection]
+    output:
+        "{project}/unpack/{sample}_{readdirection}.fq.gz"
+    message:
+        "Recompressing and merging lanes of sample {wildcards.sample}, direction {wildcards.readdirection} ..."
+    conda:
+        "envs/compression.yaml"
+    threads: 8
+    resources: high_diskio=4 # Limit disk IO
+    shell:
+        # Decompression speed does not increase nearly as much as compression with more cores, so keep the core count lower than the compression.
+        "pigz -p2 -dkc {input} | pigz -p{threads} -c > {output}"
+
+
 rule recompress_bz2_and_merge_lanes:
     input:
         lambda wildcards: config["data"][wildcards.sample][wildcards.readdirection]

@@ -5,11 +5,34 @@ __copyright__ = "Copyright 2017 Thom Griffioen"
 __email__ = "t.griffioen@nioo.knaw.nl"
 __license__ = "MIT"
 
+
 from snakemake.utils import min_version
 
 min_version("3.11.0")
 
+
 configfile: "config.yaml"
+
+
+# decide the recompression method
+if config["compression"] == "bz2":
+    ruleorder:
+        recompress_bz2_and_merge_lanes >
+        recompress_gz_and_merge_lanes >
+        compress_raw_and_merge_lanes
+elif config["compression"] == "gz":
+    ruleorder:
+        recompress_gz_and_merge_lanes >
+        recompress_bz2_and_merge_lanes >
+        compress_raw_and_merge_lanes
+elif config["compression"] in ["fastq", "fq"]:
+    ruleorder:
+        compress_raw_and_merge_lanes >
+        recompress_gz_and_merge_lanes >
+        recompress_bz2_and_merge_lanes
+
+
+# target files for rule all
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
