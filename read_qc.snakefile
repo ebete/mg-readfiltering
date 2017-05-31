@@ -18,7 +18,7 @@ rule qc_reads:
 
 rule aggegrate_results:
     input:
-        expand("{{project}}/fastqc/{sample}_{direction}_{paired}_fastqc.zip", sample=config["data"], direction=["forward", "reverse"], paired=["paired", "unpaired"])
+        expand("{{project}}/fastqc/{sample}_{direction}_{paired}_fastqc.zip", sample=config["data"], direction=DIRECTION, paired=PAIRED)
     output:
         html = "{project}/multiqc/qc_report.html",
         zip = "{project}/multiqc/qc_report_data.zip"

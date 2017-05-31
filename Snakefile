@@ -32,6 +32,12 @@ elif config["compression"] in ["fastq", "fq"]:
         recompress_bz2_and_merge_lanes
 
 
+# constants used in expand functions
+PAIRED = ["paired", "unpaired"]
+DIRECTION = ["forward", "reverse"]
+READDIR = ["r1", "r2"]
+
+
 # target files for rule all
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
@@ -49,7 +55,7 @@ if config["run-binning"]:
 
 rule all:
     input:
-        expand(OUTFILES, project=config["project"], sample=config["data"], paired=["paired", "unpaired"], direction=["forward", "reverse"], readdirection=["r1", "r2"])
+        expand(OUTFILES, project=config["project"], sample=config["data"], paired=PAIRED, direction=DIRECTION, readdirection=READDIR)
 
 
 include: "read_trim.snakefile"
