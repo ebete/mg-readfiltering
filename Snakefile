@@ -42,15 +42,16 @@ READDIR = ["r1", "r2"]
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html")           # FastQC > MultiQC
+    OUTFILES.append("{project}/multiqc/qc_report.html")             # FastQC > MultiQC
 if config["run-krona"]:
-    OUTFILES.append("{project}/krona/{sample}_{paired}.html")     # Kaiju > Krona
+    OUTFILES.append("{project}/kaiju/{sample}_{paired}.report.tsv") # Kaiju > Report
+    OUTFILES.append("{project}/krona/{sample}_{paired}.html")       # Kaiju > Krona
 if config["run-khist"]:
-    OUTFILES.append("{project}/khmer/kdepth.done")                # BBMap khist > R
+    OUTFILES.append("{project}/khmer/kdepth.done")                  # BBMap khist > R
 #if config["run-diginorm"]:
-#    OUTFILES.append("{project}/khmer/{sample}.fq.gz")             # Khmer digital normalisation
+#    OUTFILES.append("{project}/khmer/{sample}.fq.gz")               # Khmer digital normalisation
 if config["run-binning"]:
-    OUTFILES.append("{project}/bins/merged/binmerge.done")        # Kaiju > Binning
+    OUTFILES.append("{project}/bins/merged/binmerge.done")          # Kaiju > Binning
 
 
 rule all:
