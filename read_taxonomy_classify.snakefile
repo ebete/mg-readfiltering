@@ -74,6 +74,25 @@ rule bin_merge:
         "finddups.py {params.indirs} {params.outdir} 2> {log}"
 
 
+rule kaiju_reporting:
+    input:
+        "{project}/kaiju/{sample}_{paired}.tsv"
+    output:
+        "{project}/kaiju/{sample}_{paired}.report.tsv"
+    conda:
+        "envs/kaiju.yaml"
+    log:
+        "{project}/logs/kaiju/{sample}_{paired}_report.log"
+    threads: 1
+    resources:
+        high_diskio = 1
+    params:
+        kaiju_files = "-t {0}/nodes.dmp -n {0}/names.dmp".format(config["kaiju"]["db"]),
+        tax_rank = config["kaiju"]["tax-rank"]
+    shell:
+        "kaijuReport {params.kaiju_files} -r {params.tax_rank} -o >(sed -e 's/^ \+//; /^[^0-9]/d; s/[ \t]\+/\t/g; s/\t/ /g3' > {output}) -i {input} 2> {log}"
+
+
 rule kaiju_krona:
     input:
         "{project}/kaiju/{sample}_{paired}.tsv"
