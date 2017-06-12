@@ -44,7 +44,7 @@ OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
     OUTFILES.append("{project}/multiqc/qc_report.html")             # FastQC > MultiQC
 if config["run-krona"]:
-    OUTFILES.append("{project}/kaiju/{sample}_{paired}.report.tsv") # Kaiju > Report
+    OUTFILES.append("{project}/kaiju/{sample}.report.tsv") # Kaiju > Report
     OUTFILES.append("{project}/krona/{sample}_{paired}.html")       # Kaiju > Krona
 if config["run-khist"]:
     OUTFILES.append("{project}/khmer/kdepth.done")                  # BBMap khist > R
