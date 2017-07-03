@@ -42,7 +42,8 @@ READDIR = ["r1", "r2"]
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html")             # FastQC > MultiQC
+    OUTFILES.append("{project}/multiqc_pre/qc_report.html")             # FastQC > MultiQC
+    OUTFILES.append("{project}/multiqc_post/qc_report.html")            # FastQC > MultiQC
 if config["run-krona"]:
     OUTFILES.append("{project}/kaiju/{sample}.report.tsv") # Kaiju > Report
     OUTFILES.append("{project}/krona/{sample}_{paired}.html")       # Kaiju > Krona
