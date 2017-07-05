@@ -1,13 +1,13 @@
 rule qc_reads_pre:
     input:
-        "{project}/reformatted/{sample}_{paired}.fq.gz"
+        "{project}/unpack/{sample}_{readdirection}.fq.gz"
     output:
-        html = "{project}/fastqc_pre/{sample}_{paired}_fastqc.html",
-        zip = "{project}/fastqc_pre/{sample}_{paired}_fastqc.zip"
+        html = "{project}/fastqc_pre/{sample}_{readdirection}_fastqc.html",
+        zip = "{project}/fastqc_pre/{sample}_{readdirection}_fastqc.zip"
     conda:
         "envs/fastqc.yaml"
     log:
-        "{project}/logs/fastqc/{sample}_{paired}.log"
+        "{project}/logs/fastqc/{sample}_{readdirection}.log"
     threads: 4
     resources: high_diskio=1 # Limit disk IO
     params:
@@ -36,7 +36,7 @@ rule qc_reads_post:
 
 rule aggegrate_results_pre:
     input:
-        expand("{{project}}/fastqc_pre/{sample}_{paired}_fastqc.zip", sample=config["data"], paired=PAIRED)
+        expand("{{project}}/fastqc_pre/{sample}_{readdirection}_fastqc.zip", sample=config["data"], readdirection=READDIR)
     output:
         html = "{project}/multiqc_pre/qc_report.html",
         zip = "{project}/multiqc_pre/qc_report_data.zip"
