@@ -13,7 +13,7 @@ $ cd analysis/
 ```
 Activate the Conda environment by running the following command in the directory you just cloned the pipeline to:
 ```sh
-conda env create -f environment.yml
+$ conda env create -f environment.yml
 ```
 You should now see `(mg-preprocess)` in your primary prompt string (e.g. `(mg-preprocess) thomg@nioo0002:~/project $ `). This means that the environment has been loaded correctly.
 
