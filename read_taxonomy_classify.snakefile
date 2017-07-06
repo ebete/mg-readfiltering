@@ -59,7 +59,7 @@ rule kaiju_binning:
 
 rule bin_merge:
     input:
-        expand("{{project}}/bins/{sample}_paired/binning.done", sample=config["data"])
+        expand("{{project}}/bins/{sample}_paired/binning.done", sample=SAMPLES)
     output:
         touch("{project}/bins/merged/binmerge.done")
     log:
@@ -68,7 +68,7 @@ rule bin_merge:
     resources:
         high_diskio = 1
     params:
-        indirs = expand("{project}/bins/{sample}_paired/", project=config["project"], sample=config["data"]),
+        indirs = expand("{project}/bins/{sample}_paired/", project=PROJECT, sample=SAMPLES),
         outdir = "{project}/bins/merged/"
     shell:
         "finddups.py {params.indirs} {params.outdir} 2> {log}"

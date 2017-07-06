@@ -33,6 +33,8 @@ elif config["compression"] in ["fastq", "fq"]:
 
 
 # constants used in expand functions
+PROJECT = config["project"]
+SAMPLES = config["data"]
 PAIRED = ["paired", "unpaired"]
 DIRECTION = ["forward", "reverse"]
 READDIR = ["r1", "r2"]
@@ -57,7 +59,7 @@ if config["run-binning"]:
 
 rule all:
     input:
-        expand(OUTFILES, project=config["project"], sample=config["data"], paired=PAIRED, direction=DIRECTION, readdirection=READDIR)
+        expand(OUTFILES, project=PROJECT, sample=SAMPLES, paired=PAIRED, direction=DIRECTION, readdirection=READDIR)
 
 
 include: "read_trim.snakefile"

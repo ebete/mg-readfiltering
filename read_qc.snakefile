@@ -36,7 +36,7 @@ rule qc_reads_post:
 
 rule aggegrate_results_pre:
     input:
-        expand("{{project}}/fastqc_pre/{sample}_{readdirection}_fastqc.zip", sample=config["data"], readdirection=READDIR)
+        expand("{{project}}/fastqc_pre/{sample}_{readdirection}_fastqc.zip", sample=SAMPLES, readdirection=READDIR)
     output:
         html = "{project}/multiqc_pre/qc_report.html",
         zip = "{project}/multiqc_pre/qc_report_data.zip"
@@ -55,7 +55,7 @@ rule aggegrate_results_pre:
 
 rule aggegrate_results_post:
     input:
-        expand("{{project}}/fastqc_post/{sample}_{direction}_{paired}_fastqc.zip", sample=config["data"], direction=DIRECTION, paired=PAIRED)
+        expand("{{project}}/fastqc_post/{sample}_{direction}_{paired}_fastqc.zip", sample=SAMPLES, direction=DIRECTION, paired=PAIRED)
     output:
         html = "{project}/multiqc_post/qc_report.html",
         zip = "{project}/multiqc_post/qc_report_data.zip"
