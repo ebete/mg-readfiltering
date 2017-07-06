@@ -5,7 +5,7 @@ stages:
   - test
 
 before_script:
-    - conda env create -q -n mg-pipeline f environment.yml
+    - conda env create -q -n mg-pipeline -f environment.yml
     - source activate mg-pipeline
 
 test_job:
