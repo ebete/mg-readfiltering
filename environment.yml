@@ -1,6 +1,7 @@
 name: mg-preprocess
 channels:
   - r
+  - etetoolkit
   - bioconda
   - defaults
   - conda-forge
@@ -10,3 +11,6 @@ dependencies:
   - snakemake>=3.12
   - pyyaml
   - natsort
+  - scipy
+  - biopython
+  - ete3
