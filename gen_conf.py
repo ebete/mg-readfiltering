@@ -108,7 +108,12 @@ def get_sample_files(path):
             compress_algo.append(os.path.splitext(fastq_paths["r1"])[1])
             compress_algo.append(os.path.splitext(fastq_paths["r2"])[1])
 
-            sample_id = re.search("(M[GT][\d]{1,2})", sample_id).group(1)
+            
+            id_match = re.search("(M[GT][\d]{1,2})", sample_id)
+            try:
+                sample_id = id_match.group(1)
+            except AttributeError:
+                logging.warning("The sample '%s' does not follow the correct naming scheme. Skipping ..." % sample_id)
             logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r1"], sample_id))
             samples.setdefault(sample_id, {})
             samples[sample_id].setdefault("r1", []).append(fastq_paths["r1"])
