@@ -115,7 +115,7 @@ def get_sample_files(path):
             except AttributeError:
                 logging.warning("The sample '%s' does not follow the correct naming scheme. Skipping ..." % sample_id)
                 continue
-            logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r1"], sample_id))
+            logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r2"], sample_id))
             samples.setdefault(sample_id, {})
             samples[sample_id].setdefault("r1", []).append(fastq_paths["r1"])
             samples[sample_id].setdefault("r2", []).append(fastq_paths["r2"])
