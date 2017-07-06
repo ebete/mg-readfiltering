@@ -10,11 +10,14 @@ from collections import OrderedDict
 from traceback import format_exc
 # PyYAML
 import yaml
+# natsort
+from natsort import natsorted
 
 """
 MIT License
 Copyright (c) 2017 Mattias de Hollander / Thom Griffioen
-
+# natsort
+from natsort import natsorted
 Author: Mattias de Hollander <m.dehollander@nioo.knaw.nl>
 Author: Thom Griffioen <t.griffioen@nioo.knaw.nl>
 Date: 2017-05-19
@@ -46,7 +49,7 @@ def get_sample_files(path):
     valid_ext = []
     for x in valid_formats:
         for y in valid_compressions:
-            valid_ext.append(x+y)
+            valid_ext.append(x + y)
     valid_ext = tuple(valid_ext)
     logging.debug("Valid file extensions set to %s" % ", ".join(valid_ext))
 
@@ -105,7 +108,13 @@ def get_sample_files(path):
             compress_algo.append(os.path.splitext(fastq_paths["r1"])[1])
             compress_algo.append(os.path.splitext(fastq_paths["r2"])[1])
 
-            sample_id = re.search("(M[GT][\d]{1,2})", sample_id).group(1)
+            
+            id_match = re.search("(M[GT][\d]{1,2})", sample_id)
+            try:
+                sample_id = id_match.group(1)
+            except AttributeError:
+                logging.warning("The sample '%s' does not follow the correct naming scheme. Skipping ..." % sample_id)
+                continue
             logging.info("Found sample pair %s + %s with ID %s" % (fastq_paths["r1"], fastq_paths["r1"], sample_id))
             samples.setdefault(sample_id, {})
             samples[sample_id].setdefault("r1", []).append(fastq_paths["r1"])
@@ -115,6 +124,7 @@ def get_sample_files(path):
     if len(compress_algo) > 1:
         raise Exception("Multiple compression methods used at the same time. This is not supported.")
 
+    samples = OrderedDict(natsorted(samples.items()))
     return samples, str(compress_algo[0])[1:]
 
 

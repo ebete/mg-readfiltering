@@ -33,6 +33,8 @@ elif config["compression"] in ["fastq", "fq"]:
 
 
 # constants used in expand functions
+PROJECT = config["project"]
+SAMPLES = config["data"]
 PAIRED = ["paired", "unpaired"]
 DIRECTION = ["forward", "reverse"]
 READDIR = ["r1", "r2"]
@@ -42,7 +44,8 @@ READDIR = ["r1", "r2"]
 OUTFILES = []
 OUTFILES.append("{project}/reformatted/{sample}_{paired}.fq.gz")
 if config["run-fastqc"]:
-    OUTFILES.append("{project}/multiqc/qc_report.html")             # FastQC > MultiQC
+    OUTFILES.append("{project}/multiqc_pre/qc_report.html")             # FastQC > MultiQC
+    OUTFILES.append("{project}/multiqc_post/qc_report.html")            # FastQC > MultiQC
 if config["run-krona"]:
     OUTFILES.append("{project}/kaiju/{sample}.report.tsv") # Kaiju > Report
     OUTFILES.append("{project}/krona/{sample}_{paired}.html")       # Kaiju > Krona
@@ -56,7 +59,7 @@ if config["run-binning"]:
 
 rule all:
     input:
-        expand(OUTFILES, project=config["project"], sample=config["data"], paired=PAIRED, direction=DIRECTION, readdirection=READDIR)
+        expand(OUTFILES, project=PROJECT, sample=SAMPLES, paired=PAIRED, direction=DIRECTION, readdirection=READDIR)
 
 
 include: "read_trim.snakefile"

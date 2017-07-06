@@ -11,6 +11,11 @@ Start off by cloning the git project into the `analysis/` directory and moving i
 $ git clone git@gitlab.bioinf.nioo.knaw.nl:ThomG/mg-readfiltering.git analysis/
 $ cd analysis/
 ```
+Activate the Conda environment by running the following command in the directory you just cloned the pipeline to:
+```sh
+$ conda env create -f environment.yml
+```
+You should now see `(mg-preprocess)` in your primary prompt string (e.g. `(mg-preprocess) thomg@nioo0002:~/project $ `). This means that the environment has been loaded correctly.
 
 ### Naming raw read files
 The file names for the raw data has to follow some rules so the program understands what the data is.

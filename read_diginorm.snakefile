@@ -18,7 +18,7 @@ rule kmer_histogram:
 
 rule kmer_histo_graph:
     input:
-        expand("{{project}}/khmer/{sample}_{paired}.hist", sample=config["data"], paired=PAIRED)
+        expand("{{project}}/khmer/{sample}_{paired}.hist", sample=SAMPLES, paired=PAIRED)
     output:
         done = touch("{project}/khmer/kdepth.done"),
         pdf = "{project}/khmer/multi_hist.pdf"
